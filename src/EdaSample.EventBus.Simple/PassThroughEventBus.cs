@@ -34,7 +34,6 @@ namespace EdaSample.EventBus.Simple
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
-
         void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -47,7 +46,6 @@ namespace EdaSample.EventBus.Simple
                 disposedValue = true;
             }
         }
-
         public void Dispose() => Dispose(true);
         #endregion
     }

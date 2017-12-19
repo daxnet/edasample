@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EdaSample.Common.Events;
+using EdaSample.EventBus.Simple;
+using EdaSample.Services.Customer.EventHandlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,11 +27,17 @@ namespace EdaSample.Services.Customer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddTransient<IEventHandler, CustomerCreatedEventHandler>();
+            services.AddSingleton<IEventBus, PassThroughEventBus>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
