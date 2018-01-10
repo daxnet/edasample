@@ -1,17 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.0
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.Common", "src\EdaSample.Common\EdaSample.Common.csproj", "{01D6D3C2-45DF-45DF-A53C-E63F60C93C9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Common", "src\EdaSample.Common\EdaSample.Common.csproj", "{01D6D3C2-45DF-45DF-A53C-E63F60C93C9A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0 - Framework", "0 - Framework", "{865391C4-CCCF-4B27-A784-C02794202855}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 - Application", "1 - Application", "{93BE142E-830C-4FBF-9267-8FD7472F088F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.EventBus.Simple", "src\EdaSample.EventBus.Simple\EdaSample.EventBus.Simple.csproj", "{BB998FCD-78EE-4DB9-BA86-8716EF681BE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.EventBus.Simple", "src\EdaSample.EventBus.Simple\EdaSample.EventBus.Simple.csproj", "{BB998FCD-78EE-4DB9-BA86-8716EF681BE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.Services.Customer", "src\EdaSample.Services.Customer\EdaSample.Services.Customer.csproj", "{B2732EB6-D233-4540-AF8F-BCF4312844F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Services.Customer", "src\EdaSample.Services.Customer\EdaSample.Services.Customer.csproj", "{B2732EB6-D233-4540-AF8F-BCF4312844F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.EventStores.Dapper", "src\EdaSample.EventStores.Dapper\EdaSample.EventStores.Dapper.csproj", "{110FF256-9CF2-4F2D-84A0-7332D37A15A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.Integration.AspNetCore", "src\EdaSample.Integration.AspNetCore\EdaSample.Integration.AspNetCore.csproj", "{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,14 @@ Global
 		{B2732EB6-D233-4540-AF8F-BCF4312844F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2732EB6-D233-4540-AF8F-BCF4312844F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2732EB6-D233-4540-AF8F-BCF4312844F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{110FF256-9CF2-4F2D-84A0-7332D37A15A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{110FF256-9CF2-4F2D-84A0-7332D37A15A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{110FF256-9CF2-4F2D-84A0-7332D37A15A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{110FF256-9CF2-4F2D-84A0-7332D37A15A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +51,8 @@ Global
 		{01D6D3C2-45DF-45DF-A53C-E63F60C93C9A} = {865391C4-CCCF-4B27-A784-C02794202855}
 		{BB998FCD-78EE-4DB9-BA86-8716EF681BE7} = {865391C4-CCCF-4B27-A784-C02794202855}
 		{B2732EB6-D233-4540-AF8F-BCF4312844F0} = {93BE142E-830C-4FBF-9267-8FD7472F088F}
+		{110FF256-9CF2-4F2D-84A0-7332D37A15A4} = {865391C4-CCCF-4B27-A784-C02794202855}
+		{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17} = {865391C4-CCCF-4B27-A784-C02794202855}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {735DB5FF-3ED8-4D88-8999-2C02E6AAABB1}

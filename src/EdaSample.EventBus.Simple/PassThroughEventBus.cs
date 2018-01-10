@@ -1,4 +1,5 @@
 ﻿using EdaSample.Common.Events;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,14 @@ namespace EdaSample.EventBus.Simple
     {
         private readonly EventQueue eventQueue = new EventQueue();
         private readonly IEnumerable<IEventHandler> eventHandlers;
+        private readonly ILogger logger;
 
-        public PassThroughEventBus(IEnumerable<IEventHandler> eventHandlers)
+        public PassThroughEventBus(IEnumerable<IEventHandler> eventHandlers,
+            ILogger<PassThroughEventBus> logger)
         {
             this.eventHandlers = eventHandlers;
+            this.logger = logger;
+            logger.LogInformation($"PassThroughEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
         }
 
         private void EventQueue_EventPushed(object sender, EventProcessedEventArgs e)
@@ -41,6 +46,7 @@ namespace EdaSample.EventBus.Simple
                 if (disposing)
                 {
                     this.eventQueue.EventPushed -= EventQueue_EventPushed;
+                    logger.LogInformation($"PassThroughEventBus已经被Dispose。Hash Code:{this.GetHashCode()}.");
                 }
 
                 disposedValue = true;

@@ -3,6 +3,7 @@ using EdaSample.Common.Events;
 using EdaSample.Services.Customer.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -17,13 +18,16 @@ namespace EdaSample.Services.Customer.Controllers
         private readonly IConfiguration configuration;
         private readonly string connectionString;
         private readonly IEventBus eventBus;
+        private readonly ILogger logger;
 
         public CustomersController(IConfiguration configuration,
-            IEventBus eventBus)
+            IEventBus eventBus,
+            ILogger<CustomersController> logger)
         {
             this.configuration = configuration;
             this.connectionString = configuration["mssql:connectionString"];
             this.eventBus = eventBus;
+            this.logger = logger;
         }
 
 
@@ -48,6 +52,7 @@ namespace EdaSample.Services.Customer.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] dynamic model)
         {
+            this.logger.LogInformation($"开始创建客户信息。");
             var name = (string)model.Name;
             if (string.IsNullOrEmpty(name))
             {
@@ -61,6 +66,8 @@ namespace EdaSample.Services.Customer.Controllers
                 await connection.ExecuteAsync(sql, customer);
 
                 await this.eventBus.PublishAsync(new CustomerCreatedEvent(name));
+
+                this.logger.LogInformation($"客户信息创建成功。");
 
                 return Created(Url.Action("Get", new { id = customer.Id }), customer.Id);
             }

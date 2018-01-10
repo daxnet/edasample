@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EdaSample.Common.Events;
 using EdaSample.EventBus.Simple;
+using EdaSample.EventStores.Dapper;
 using EdaSample.Services.Customer.EventHandlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,20 +17,28 @@ namespace EdaSample.Services.Customer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILogger logger;
+
+        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
+            this.logger = loggerFactory.CreateLogger<Startup>();
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            this.logger.LogInformation("正在对服务进行配置...");
+
             services.AddMvc();
 
             services.AddTransient<IEventHandler, CustomerCreatedEventHandler>();
+            services.AddTransient<IEventStore>(serviceProvider => 
+                new DapperEventStore(Configuration["mssql:connectionString"], 
+                    serviceProvider.GetRequiredService<ILogger<DapperEventStore>>()));
             services.AddSingleton<IEventBus, PassThroughEventBus>();
+            this.logger.LogInformation("服务配置完成，已注册到IoC容器！");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

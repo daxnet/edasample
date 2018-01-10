@@ -12,6 +12,8 @@ namespace EdaSample.Services.Customer
 {
     public class Program
     {
+        private static readonly string LogFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "EdaSample.Services.Customer.logs.txt");
+
         public static void Main(string[] args)
         {
             BuildWebHost(args).Run();
@@ -19,6 +21,10 @@ namespace EdaSample.Services.Customer
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging((context, lb) =>
+                {
+                    lb.AddFile(LogFileName);
+                })
                 .UseStartup<Startup>()
                 .Build();
     }
