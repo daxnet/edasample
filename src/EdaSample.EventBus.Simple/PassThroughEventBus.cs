@@ -13,28 +13,35 @@ namespace EdaSample.EventBus.Simple
     public sealed class PassThroughEventBus : IEventBus
     {
         private readonly EventQueue eventQueue = new EventQueue();
-        private readonly IEnumerable<IEventHandler> eventHandlers;
         private readonly ILogger logger;
+        private readonly IEventHandlerExecutionContext context;
 
-        public PassThroughEventBus(IEnumerable<IEventHandler> eventHandlers,
+        public PassThroughEventBus(IEventHandlerExecutionContext context,
             ILogger<PassThroughEventBus> logger)
         {
-            this.eventHandlers = eventHandlers;
+            this.context = context;
             this.logger = logger;
             logger.LogInformation($"PassThroughEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
+
+            eventQueue.EventPushed += EventQueue_EventPushed;
         }
 
-        private void EventQueue_EventPushed(object sender, EventProcessedEventArgs e)
-            => (from eh in this.eventHandlers
-                where eh.CanHandle(e.Event)
-                select eh).ToList().ForEach(async eh => await eh.HandleAsync(e.Event));
+        private async void EventQueue_EventPushed(object sender, EventProcessedEventArgs e)
+            => await this.context.HandleEventAsync(e.Event);
 
         public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
             where TEvent : IEvent
                 => Task.Factory.StartNew(() => eventQueue.Push(@event));
 
-        public void Subscribe()
-            => eventQueue.EventPushed += EventQueue_EventPushed;
+        public void Subscribe<TEvent, TEventHandler>()
+            where TEvent : IEvent
+            where TEventHandler : IEventHandler<TEvent>
+        {
+            if (!this.context.HandlerRegistered<TEvent, TEventHandler>())
+            {
+                this.context.RegisterHandler<TEvent, TEventHandler>();
+            }
+        }
 
 
         #region IDisposable Support
@@ -53,6 +60,7 @@ namespace EdaSample.EventBus.Simple
             }
         }
         public void Dispose() => Dispose(true);
+
         #endregion
     }
 }

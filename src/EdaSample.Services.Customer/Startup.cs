@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using EdaSample.Common.Events;
 using EdaSample.EventBus.Simple;
 using EdaSample.EventStores.Dapper;
+using EdaSample.Integration.AspNetCore;
 using EdaSample.Services.Customer.EventHandlers;
+using EdaSample.Services.Customer.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,11 +35,15 @@ namespace EdaSample.Services.Customer
 
             services.AddMvc();
 
-            services.AddTransient<IEventHandler, CustomerCreatedEventHandler>();
             services.AddTransient<IEventStore>(serviceProvider => 
                 new DapperEventStore(Configuration["mssql:connectionString"], 
                     serviceProvider.GetRequiredService<ILogger<DapperEventStore>>()));
+
+            var eventHandlerExecutionContext = new EventHandlerExecutionContext(services, 
+                sc => sc.BuildServiceProvider());
+            services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
             services.AddSingleton<IEventBus, PassThroughEventBus>();
+
             this.logger.LogInformation("服务配置完成，已注册到IoC容器！");
         }
 
@@ -45,7 +51,7 @@ namespace EdaSample.Services.Customer
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            eventBus.Subscribe();
+            eventBus.Subscribe<CustomerCreatedEvent, CustomerCreatedEventHandler>();
 
             if (env.IsDevelopment())
             {

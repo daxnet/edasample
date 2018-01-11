@@ -26,6 +26,7 @@
     <ProjectReference Include="..\EdaSample.Common\EdaSample.Common.csproj" />
     <ProjectReference Include="..\EdaSample.EventBus.Simple\EdaSample.EventBus.Simple.csproj" />
     <ProjectReference Include="..\EdaSample.EventStores.Dapper\EdaSample.EventStores.Dapper.csproj" />
+    <ProjectReference Include="..\EdaSample.Integration.AspNetCore\EdaSample.Integration.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

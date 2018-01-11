@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Services.Customer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.EventStores.Dapper", "src\EdaSample.EventStores.Dapper\EdaSample.EventStores.Dapper.csproj", "{110FF256-9CF2-4F2D-84A0-7332D37A15A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.Integration.AspNetCore", "src\EdaSample.Integration.AspNetCore\EdaSample.Integration.AspNetCore.csproj", "{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Integration.AspNetCore", "src\EdaSample.Integration.AspNetCore\EdaSample.Integration.AspNetCore.csproj", "{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
