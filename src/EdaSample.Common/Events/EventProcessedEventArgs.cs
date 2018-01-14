@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EdaSample.Common.Events
 {
@@ -12,6 +10,5 @@ namespace EdaSample.Common.Events
         }
 
         public IEvent Event { get; }
-
     }
 }

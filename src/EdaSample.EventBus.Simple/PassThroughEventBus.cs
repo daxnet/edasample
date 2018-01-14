@@ -10,16 +10,15 @@ using System.Threading.Tasks;
 
 namespace EdaSample.EventBus.Simple
 {
-    public sealed class PassThroughEventBus : IEventBus
+    public sealed class PassThroughEventBus : BaseEventBus
     {
         private readonly EventQueue eventQueue = new EventQueue();
         private readonly ILogger logger;
-        private readonly IEventHandlerExecutionContext context;
 
         public PassThroughEventBus(IEventHandlerExecutionContext context,
             ILogger<PassThroughEventBus> logger)
+            : base(context)
         {
-            this.context = context;
             this.logger = logger;
             logger.LogInformation($"PassThroughEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
 
@@ -27,26 +26,26 @@ namespace EdaSample.EventBus.Simple
         }
 
         private async void EventQueue_EventPushed(object sender, EventProcessedEventArgs e)
-            => await this.context.HandleEventAsync(e.Event);
+            => await this.eventHandlerExecutionContext.HandleEventAsync(e.Event);
 
-        public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
-            where TEvent : IEvent
-                => Task.Factory.StartNew(() => eventQueue.Push(@event));
-
-        public void Subscribe<TEvent, TEventHandler>()
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>
+        public override Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         {
-            if (!this.context.HandlerRegistered<TEvent, TEventHandler>())
+            return Task.Factory.StartNew(() => eventQueue.Push(@event));
+        }
+
+        public override void Subscribe<TEvent, TEventHandler>()
+        {
+            if (!this.eventHandlerExecutionContext.HandlerRegistered<TEvent, TEventHandler>())
             {
-                this.context.RegisterHandler<TEvent, TEventHandler>();
+                this.eventHandlerExecutionContext.RegisterHandler<TEvent, TEventHandler>();
             }
         }
 
-
         #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-        void Dispose(bool disposing)
+
+        private bool disposedValue;
+
+        protected override void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -59,7 +58,6 @@ namespace EdaSample.EventBus.Simple
                 disposedValue = true;
             }
         }
-        public void Dispose() => Dispose(true);
 
         #endregion
     }

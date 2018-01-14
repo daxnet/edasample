@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EdaSample.Common.Events;
+using EdaSample.EventBus.RabbitMQ;
 using EdaSample.EventBus.Simple;
 using EdaSample.EventStores.Dapper;
 using EdaSample.Integration.AspNetCore;
@@ -14,11 +15,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 
 namespace EdaSample.Services.Customer
 {
     public class Startup
     {
+        private const string RMQ_EXCHANGE = "EdaSample.Exchange";
+        private const string RMQ_QUEUE = "EdaSample.Queue";
+
         private readonly ILogger logger;
 
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
@@ -42,7 +47,13 @@ namespace EdaSample.Services.Customer
             var eventHandlerExecutionContext = new EventHandlerExecutionContext(services, 
                 sc => sc.BuildServiceProvider());
             services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
-            services.AddSingleton<IEventBus, PassThroughEventBus>();
+            // services.AddSingleton<IEventBus, PassThroughEventBus>();
+
+            var connectionFactory = new ConnectionFactory { HostName = "localhost" };
+            services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(sp.GetRequiredService<IEventHandlerExecutionContext>(),
+                connectionFactory,
+                RMQ_EXCHANGE,
+                queueName: RMQ_QUEUE));
 
             this.logger.LogInformation("服务配置完成，已注册到IoC容器！");
         }
