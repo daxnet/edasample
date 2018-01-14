@@ -50,8 +50,9 @@ namespace EdaSample.Services.Customer
             // services.AddSingleton<IEventBus, PassThroughEventBus>();
 
             var connectionFactory = new ConnectionFactory { HostName = "localhost" };
-            services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(sp.GetRequiredService<IEventHandlerExecutionContext>(),
-                connectionFactory,
+            services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
+                sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),
+                sp.GetRequiredService<IEventHandlerExecutionContext>(),
                 RMQ_EXCHANGE,
                 queueName: RMQ_QUEUE));
 

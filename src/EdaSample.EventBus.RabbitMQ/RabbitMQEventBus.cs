@@ -1,4 +1,5 @@
 ﻿using EdaSample.Common.Events;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -18,10 +19,12 @@ namespace EdaSample.EventBus.RabbitMQ
         private readonly string exchangeType;
         private readonly string queueName;
         private readonly bool autoAck;
+        private readonly ILogger logger;
         private bool disposed;
 
-        public RabbitMQEventBus(IEventHandlerExecutionContext context,
-            IConnectionFactory connectionFactory,
+        public RabbitMQEventBus(IConnectionFactory connectionFactory,
+            ILogger<RabbitMQEventBus> logger,
+            IEventHandlerExecutionContext context,
             string exchangeName,
             string exchangeType = ExchangeType.Fanout,
             string queueName = null,
@@ -29,6 +32,7 @@ namespace EdaSample.EventBus.RabbitMQ
             : base(context)
         {
             this.connectionFactory = connectionFactory;
+            this.logger = logger;
             this.connection = this.connectionFactory.CreateConnection();
             this.channel = this.connection.CreateModel();
             this.exchangeType = exchangeType;
@@ -38,6 +42,8 @@ namespace EdaSample.EventBus.RabbitMQ
             this.channel.ExchangeDeclare(this.exchangeName, this.exchangeType);
 
             this.queueName = this.InitializeEventConsumer(queueName);
+
+            logger.LogInformation($"RabbitMQEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
         }
 
         public override Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default(CancellationToken))
@@ -68,6 +74,8 @@ namespace EdaSample.EventBus.RabbitMQ
                 {
                     this.channel.Dispose();
                     this.connection.Dispose();
+
+                    logger.LogInformation($"RabbitMQEventBus已经被Dispose。Hash Code:{this.GetHashCode()}.");
                 }
 
                 disposed = true;
