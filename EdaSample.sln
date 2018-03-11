@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Common", "src\EdaSample.Common\EdaSample.Common.csproj", "{01D6D3C2-45DF-45DF-A53C-E63F60C93C9A}"
 EndProject
@@ -17,7 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.EventStores.Dappe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Integration.AspNetCore", "src\EdaSample.Integration.AspNetCore\EdaSample.Integration.AspNetCore.csproj", "{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.EventBus.RabbitMQ", "src\EdaSample.EventBus.RabbitMQ\EdaSample.EventBus.RabbitMQ.csproj", "{845C94EC-0023-4DD4-BB9E-32E5A9EBC2F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.EventBus.RabbitMQ", "src\EdaSample.EventBus.RabbitMQ\EdaSample.EventBus.RabbitMQ.csproj", "{845C94EC-0023-4DD4-BB9E-32E5A9EBC2F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2- Tests", "2- Tests", "{0B52AB70-8ABB-4BA2-A2B4-BC0C6CAC110B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.Tests", "src\EdaSample.Tests\EdaSample.Tests.csproj", "{890C9EE5-E759-445E-BA3F-0CA0FA9B05B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +53,10 @@ Global
 		{845C94EC-0023-4DD4-BB9E-32E5A9EBC2F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{845C94EC-0023-4DD4-BB9E-32E5A9EBC2F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{845C94EC-0023-4DD4-BB9E-32E5A9EBC2F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{890C9EE5-E759-445E-BA3F-0CA0FA9B05B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{890C9EE5-E759-445E-BA3F-0CA0FA9B05B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{890C9EE5-E759-445E-BA3F-0CA0FA9B05B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{890C9EE5-E759-445E-BA3F-0CA0FA9B05B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +68,7 @@ Global
 		{110FF256-9CF2-4F2D-84A0-7332D37A15A4} = {865391C4-CCCF-4B27-A784-C02794202855}
 		{37C1B71F-8BB7-4800-BFCA-FE6DC07DEF17} = {865391C4-CCCF-4B27-A784-C02794202855}
 		{845C94EC-0023-4DD4-BB9E-32E5A9EBC2F3} = {865391C4-CCCF-4B27-A784-C02794202855}
+		{890C9EE5-E759-445E-BA3F-0CA0FA9B05B7} = {0B52AB70-8ABB-4BA2-A2B4-BC0C6CAC110B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {735DB5FF-3ED8-4D88-8999-2C02E6AAABB1}

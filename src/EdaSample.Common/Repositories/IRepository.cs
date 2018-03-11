@@ -7,8 +7,10 @@ namespace EdaSample.Common.Repositories
 {
     public interface IRepository
     {
-        Task SaveAsync(IAggregateRootWithEventSourcing aggregateRoot);
+        Task SaveAsync<TAggregateRoot>(TAggregateRoot aggregateRoot)
+            where TAggregateRoot : class, IAggregateRootWithEventSourcing;
 
-        Task<IAggregateRootWithEventSourcing> GetByIdAsync(Guid id);
+        Task<TAggregateRoot> GetByIdAsync<TAggregateRoot>(Guid id)
+            where TAggregateRoot : class, IAggregateRootWithEventSourcing;
     }
 }

@@ -12,7 +12,7 @@ namespace EdaSample.Common
 {
     public abstract class AggregateRootWithEventSourcing : IAggregateRootWithEventSourcing
     {
-        private readonly Guid id;
+        private Guid id;
         private readonly ConcurrentQueue<IDomainEvent> uncommittedEvents = new ConcurrentQueue<IDomainEvent>();
         private readonly Lazy<Dictionary<string, MethodInfo>> registeredHandlers;
         private long persistedVersion = 0;
@@ -25,26 +25,33 @@ namespace EdaSample.Common
 
         protected AggregateRootWithEventSourcing(Guid id)
         {
-            Raise(new AggregateCreatedEvent(id));
-
             registeredHandlers = new Lazy<Dictionary<string, MethodInfo>>(() =>
             {
                 var registry = new Dictionary<string, MethodInfo>();
                 var methodInfoList = from mi in this.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                                      let returnType = mi.ReturnType
                                      let parameters = mi.GetParameters()
-                                     where returnType == typeof(void) &&
+                                     where mi.IsDefined(typeof(HandlesInlineAttribute), false) &&
+                                     returnType == typeof(void) &&
                                      parameters.Length == 1 &&
                                      typeof(IDomainEvent).IsAssignableFrom(parameters[0].ParameterType)
                                      select new { EventName = parameters[0].ParameterType.FullName, MethodInfo = mi };
 
-                foreach(var methodInfo in methodInfoList)
+                foreach (var methodInfo in methodInfoList)
                 {
                     registry.Add(methodInfo.EventName, methodInfo.MethodInfo);
                 }
 
                 return registry;
             });
+
+            Raise(new AggregateCreatedEvent(id));
+        }
+
+        [HandlesInline]
+        protected void OnAggregateCreated(AggregateCreatedEvent @event)
+        {
+            this.id = @event.NewId;
         }
 
         public IEnumerable<IDomainEvent> UncommittedEvents => uncommittedEvents;
@@ -56,12 +63,16 @@ namespace EdaSample.Common
         protected void Raise<TDomainEvent>(TDomainEvent domainEvent)
             where TDomainEvent : IDomainEvent
         {
+            // 首先处理事件数据。
+            this.HandleEvent(domainEvent);
+
+            // 然后设置事件的元数据，包括当前事件所对应的聚合根类型以及
+            // 聚合的ID值。
             domainEvent.AggregateRootId = this.id;
             domainEvent.AggregateRootType = this.GetType().AssemblyQualifiedName;
             domainEvent.Sequence = this.Version + 1;
 
-            this.HandleEvent(domainEvent);
-
+            // 最后将事件缓存在“未提交事件”列表中。
             this.uncommittedEvents.Enqueue(domainEvent);
         }
 
