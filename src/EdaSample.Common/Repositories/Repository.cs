@@ -25,10 +25,15 @@ namespace EdaSample.Common.Repositories
             return aggregateRoot;
         }
 
-        public Task SaveAsync<TAggregateRoot>(TAggregateRoot aggregateRoot)
+        public async Task SaveAsync<TAggregateRoot>(TAggregateRoot aggregateRoot)
             where TAggregateRoot : class, IAggregateRootWithEventSourcing
         {
-            throw new NotImplementedException();
+            var domainEvents = aggregateRoot.UncommittedEvents;
+
+            await this.PersistDomainEventsAsync(domainEvents);
+
+            aggregateRoot.PersistedVersion = aggregateRoot.Version;
+            aggregateRoot.Purge();
         }  
 
         private TAggregateRoot ActivateAggregateRoot<TAggregateRoot>()

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace EdaSample.Common
 {
-    public interface IAggregateRootWithEventSourcing : IAggregateRoot, IPurgable
+    public interface IAggregateRootWithEventSourcing : IAggregateRoot, IPurgable, IPersistedVersionSetter
     {
         IEnumerable<IDomainEvent> UncommittedEvents { get; }
 

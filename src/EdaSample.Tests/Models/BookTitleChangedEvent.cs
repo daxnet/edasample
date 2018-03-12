@@ -13,5 +13,10 @@ namespace EdaSample.Tests.Models
         }
 
         public string NewTitle { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Sequence} - {NewTitle}";
+        }
     }
 }

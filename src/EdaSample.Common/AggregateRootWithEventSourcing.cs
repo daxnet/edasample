@@ -94,6 +94,8 @@ namespace EdaSample.Common
             }
         }
 
+        long IPersistedVersionSetter.PersistedVersion { set => Interlocked.Exchange(ref this.persistedVersion, value); }
+
         public void Replay(IEnumerable<IDomainEvent> events)
         {
             ((IPurgable)this).Purge();

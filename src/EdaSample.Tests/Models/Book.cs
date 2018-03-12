@@ -20,5 +20,10 @@ namespace EdaSample.Tests.Models
         {
             this.Title = @event.NewTitle;
         }
+
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 }
