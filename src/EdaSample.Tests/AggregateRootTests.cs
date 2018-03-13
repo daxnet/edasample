@@ -145,7 +145,8 @@ namespace EdaSample.Tests
 
             for (var i = 0; i < 100; i++)
             {
-                tasks.Add(Task.Factory.StartNew(() => book.ChangeTitle($"Book Title {i + 1}")));
+                var bookTitle = $"Book Title {i + 1}";
+                tasks.Add(Task.Factory.StartNew(() => book.ChangeTitle(bookTitle)));
             }
 
             Task.WaitAll(tasks.ToArray());

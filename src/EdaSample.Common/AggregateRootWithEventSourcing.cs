@@ -16,6 +16,7 @@ namespace EdaSample.Common
         private readonly ConcurrentQueue<IDomainEvent> uncommittedEvents = new ConcurrentQueue<IDomainEvent>();
         private readonly Lazy<Dictionary<string, MethodInfo>> registeredHandlers;
         private long persistedVersion = 0;
+        private object sync = new object();
 
         protected AggregateRootWithEventSourcing()
             : this(Guid.NewGuid())
@@ -63,17 +64,21 @@ namespace EdaSample.Common
         protected void Raise<TDomainEvent>(TDomainEvent domainEvent)
             where TDomainEvent : IDomainEvent
         {
-            // 首先处理事件数据。
-            this.HandleEvent(domainEvent);
+            lock (sync)
+            {
+                // 首先处理事件数据。
+                this.HandleEvent(domainEvent);
 
-            // 然后设置事件的元数据，包括当前事件所对应的聚合根类型以及
-            // 聚合的ID值。
-            domainEvent.AggregateRootId = this.id;
-            domainEvent.AggregateRootType = this.GetType().AssemblyQualifiedName;
-            domainEvent.Sequence = this.Version + 1;
+                // 然后设置事件的元数据，包括当前事件所对应的聚合根类型以及
+                // 聚合的ID值。
+                domainEvent.AggregateRootId = this.id;
+                domainEvent.AggregateRootType = this.GetType().AssemblyQualifiedName;
 
-            // 最后将事件缓存在“未提交事件”列表中。
-            this.uncommittedEvents.Enqueue(domainEvent);
+                domainEvent.Sequence = this.Version + 1;
+
+                // 最后将事件缓存在“未提交事件”列表中。
+                this.uncommittedEvents.Enqueue(domainEvent);
+            }
         }
 
         private void HandleEvent<TDomainEvent>(TDomainEvent domainEvent)
@@ -88,9 +93,12 @@ namespace EdaSample.Common
 
         void IPurgable.Purge()
         {
-            while (!uncommittedEvents.IsEmpty)
+            lock (sync)
             {
-                uncommittedEvents.TryDequeue(out var _);
+                while (!uncommittedEvents.IsEmpty)
+                {
+                    uncommittedEvents.TryDequeue(out var _);
+                }
             }
         }
 
