@@ -1,27 +1,45 @@
-﻿using System;
-using System.Linq;
+﻿// ============================================================================
+//   ______    _        _____                       _
+//  |  ____|  | |      / ____|                     | |
+//  | |__   __| | __ _| (___   __ _ _ __ ___  _ __ | | ___
+//  |  __| / _` |/ _` |\___ \ / _` | '_ ` _ \| '_ \| |/ _ \
+//  | |___| (_| | (_| |____) | (_| | | | | | | |_) | |  __/
+//  |______\__,_|\__,_|_____/ \__,_|_| |_| |_| .__/|_|\___|
+//                                           | |
+//                                           |_|
+// MIT License
+//
+// Copyright (c) 2017-2018 Sunny Chen (daxnet)
+//
+// ============================================================================
+
+using EdaSample.Common.Events.Domain;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Text;
-using EdaSample.Common.Events;
-using EdaSample.Common.Events.Domain;
 using System.Threading;
 
 namespace EdaSample.Common
 {
     public abstract class AggregateRootWithEventSourcing : IAggregateRootWithEventSourcing
     {
-        private Guid id;
-        private readonly ConcurrentQueue<IDomainEvent> uncommittedEvents = new ConcurrentQueue<IDomainEvent>();
+        #region Private Fields
+
         private readonly Lazy<Dictionary<string, MethodInfo>> registeredHandlers;
+        private readonly ConcurrentQueue<IDomainEvent> uncommittedEvents = new ConcurrentQueue<IDomainEvent>();
+        private Guid id;
         private long persistedVersion = 0;
         private object sync = new object();
+
+        #endregion Private Fields
+
+        #region Protected Constructors
 
         protected AggregateRootWithEventSourcing()
             : this(Guid.NewGuid())
         {
-
         }
 
         protected AggregateRootWithEventSourcing(Guid id)
@@ -49,71 +67,48 @@ namespace EdaSample.Common
             Raise(new AggregateCreatedEvent(id));
         }
 
-        [HandlesInline]
-        protected void OnAggregateCreated(AggregateCreatedEvent @event)
-        {
-            this.id = @event.NewId;
-        }
+        #endregion Protected Constructors
+
+        #region Public Properties
+
+        public Guid Id => id;
+
+        long IPersistedVersionSetter.PersistedVersion { set => Interlocked.Exchange(ref this.persistedVersion, value); }
 
         public IEnumerable<IDomainEvent> UncommittedEvents => uncommittedEvents;
 
         public long Version => this.uncommittedEvents.Count + this.persistedVersion;
 
-        public Guid Id => id;
+        #endregion Public Properties
 
-        protected void Raise<TDomainEvent>(TDomainEvent domainEvent)
-            where TDomainEvent : IDomainEvent
+        #region Public Methods
+
+        /// <summary>
+        /// Implements the operator !=.
+        /// </summary>
+        /// <param name="a">a.</param>
+        /// <param name="b">The b.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator !=(AggregateRootWithEventSourcing a, AggregateRootWithEventSourcing b) => !(a == b);
+
+        /// <summary>
+        /// Implements the operator ==.
+        /// </summary>
+        /// <param name="a">a.</param>
+        /// <param name="b">The b.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
+        public static bool operator ==(AggregateRootWithEventSourcing a, AggregateRootWithEventSourcing b)
         {
-            lock (sync)
+            if ((object)a == null)
             {
-                // 首先处理事件数据。
-                this.HandleEvent(domainEvent);
-
-                // 然后设置事件的元数据，包括当前事件所对应的聚合根类型以及
-                // 聚合的ID值。
-                domainEvent.AggregateRootId = this.id;
-                domainEvent.AggregateRootType = this.GetType().AssemblyQualifiedName;
-
-                domainEvent.Sequence = this.Version + 1;
-
-                // 最后将事件缓存在“未提交事件”列表中。
-                this.uncommittedEvents.Enqueue(domainEvent);
+                return (object)b == null;
             }
-        }
 
-        private void HandleEvent<TDomainEvent>(TDomainEvent domainEvent)
-            where TDomainEvent : IDomainEvent
-        {
-            var key = domainEvent.GetType().FullName;
-            if (registeredHandlers.Value.ContainsKey(key))
-            {
-                registeredHandlers.Value[key].Invoke(this, new object[] { domainEvent });
-            }
-        }
-
-        void IPurgable.Purge()
-        {
-            lock (sync)
-            {
-                while (!uncommittedEvents.IsEmpty)
-                {
-                    uncommittedEvents.TryDequeue(out var _);
-                }
-            }
-        }
-
-        long IPersistedVersionSetter.PersistedVersion { set => Interlocked.Exchange(ref this.persistedVersion, value); }
-
-        public void Replay(IEnumerable<IDomainEvent> events)
-        {
-            ((IPurgable)this).Purge();
-            events.OrderBy(e => e.Timestamp)
-                .ToList()
-                .ForEach(e =>
-                {
-                    HandleEvent(e);
-                    Interlocked.Increment(ref this.persistedVersion);
-                });
+            return a.Equals(b);
         }
 
         /// <summary>
@@ -143,36 +138,76 @@ namespace EdaSample.Common
         /// Returns a hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
         /// </returns>
         public override int GetHashCode() => this.id.GetHashCode();
 
-        /// <summary>
-        /// Implements the operator ==.
-        /// </summary>
-        /// <param name="a">a.</param>
-        /// <param name="b">The b.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator ==(AggregateRootWithEventSourcing a, AggregateRootWithEventSourcing b)
+        void IPurgable.Purge()
         {
-            if ((object)a == null)
+            lock (sync)
             {
-                return (object)b == null;
+                while (!uncommittedEvents.IsEmpty)
+                {
+                    uncommittedEvents.TryDequeue(out var _);
+                }
             }
-
-            return a.Equals(b);
         }
 
-        /// <summary>
-        /// Implements the operator !=.
-        /// </summary>
-        /// <param name="a">a.</param>
-        /// <param name="b">The b.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator !=(AggregateRootWithEventSourcing a, AggregateRootWithEventSourcing b) => !(a == b);
+        public void Replay(IEnumerable<IDomainEvent> events)
+        {
+            ((IPurgable)this).Purge();
+            events.OrderBy(e => e.Timestamp)
+                .ToList()
+                .ForEach(e =>
+                {
+                    HandleEvent(e);
+                    Interlocked.Increment(ref this.persistedVersion);
+                });
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        [HandlesInline]
+        protected void OnAggregateCreated(AggregateCreatedEvent @event)
+        {
+            this.id = @event.NewId;
+        }
+        protected void Raise<TDomainEvent>(TDomainEvent domainEvent)
+            where TDomainEvent : IDomainEvent
+        {
+            lock (sync)
+            {
+                // 首先处理事件数据。
+                this.HandleEvent(domainEvent);
+
+                // 然后设置事件的元数据，包括当前事件所对应的聚合根类型以及
+                // 聚合的ID值。
+                domainEvent.AggregateRootId = this.id;
+                domainEvent.AggregateRootType = this.GetType().AssemblyQualifiedName;
+
+                domainEvent.Sequence = this.Version + 1;
+
+                // 最后将事件缓存在“未提交事件”列表中。
+                this.uncommittedEvents.Enqueue(domainEvent);
+            }
+        }
+
+        #endregion Protected Methods
+
+        #region Private Methods
+
+        private void HandleEvent<TDomainEvent>(TDomainEvent domainEvent)
+            where TDomainEvent : IDomainEvent
+        {
+            var key = domainEvent.GetType().FullName;
+            if (registeredHandlers.Value.ContainsKey(key))
+            {
+                registeredHandlers.Value[key].Invoke(this, new object[] { domainEvent });
+            }
+        }
+
+        #endregion Private Methods
     }
 }

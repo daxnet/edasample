@@ -1,8 +1,21 @@
-﻿using EdaSample.Common.Events;
+﻿// ============================================================================
+//   ______    _        _____                       _
+//  |  ____|  | |      / ____|                     | |
+//  | |__   __| | __ _| (___   __ _ _ __ ___  _ __ | | ___
+//  |  __| / _` |/ _` |\___ \ / _` | '_ ` _ \| '_ \| |/ _ \
+//  | |___| (_| | (_| |____) | (_| | | | | | | |_) | |  __/
+//  |______\__,_|\__,_|_____/ \__,_|_| |_| |_| .__/|_|\___|
+//                                           | |
+//                                           |_|
+// MIT License
+//
+// Copyright (c) 2017-2018 Sunny Chen (daxnet)
+//
+// ============================================================================
+
 using EdaSample.Common.Events.Domain;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,10 +24,15 @@ namespace EdaSample.Common.Repositories
 {
     public abstract class Repository : IRepository
     {
+        #region Protected Constructors
+
         protected Repository()
         {
-            
         }
+
+        #endregion Protected Constructors
+
+        #region Public Methods
 
         public async Task<TAggregateRoot> GetByIdAsync<TAggregateRoot>(Guid id)
             where TAggregateRoot : class, IAggregateRootWithEventSourcing
@@ -34,10 +52,22 @@ namespace EdaSample.Common.Repositories
 
             aggregateRoot.PersistedVersion = aggregateRoot.Version;
             aggregateRoot.Purge();
-        }  
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        protected abstract Task<IEnumerable<IDomainEvent>> LoadDomainEventsAsync(Type aggregateRootType, Guid id);
+
+        protected abstract Task PersistDomainEventsAsync(IEnumerable<IDomainEvent> domainEvents);
+
+        #endregion Protected Methods
+
+        #region Private Methods
 
         private TAggregateRoot ActivateAggregateRoot<TAggregateRoot>()
-            where TAggregateRoot : class, IAggregateRootWithEventSourcing
+                            where TAggregateRoot : class, IAggregateRootWithEventSourcing
         {
             var constructors = from ctor in typeof(TAggregateRoot).GetTypeInfo().GetConstructors()
                                let parameters = ctor.GetParameters()
@@ -66,8 +96,6 @@ namespace EdaSample.Common.Repositories
             return null;
         }
 
-        protected abstract Task PersistDomainEventsAsync(IEnumerable<IDomainEvent> domainEvents);
-
-        protected abstract Task<IEnumerable<IDomainEvent>> LoadDomainEventsAsync(Type aggregateRootType, Guid id);
+        #endregion Private Methods
     }
 }

@@ -1,3 +1,18 @@
+// ============================================================================
+//   ______    _        _____                       _
+//  |  ____|  | |      / ____|                     | |
+//  | |__   __| | __ _| (___   __ _ _ __ ___  _ __ | | ___
+//  |  __| / _` |/ _` |\___ \ / _` | '_ ` _ \| '_ \| |/ _ \
+//  | |___| (_| | (_| |____) | (_| | | | | | | |_) | |  __/
+//  |______\__,_|\__,_|_____/ \__,_|_| |_| |_| .__/|_|\___|
+//                                           | |
+//                                           |_|
+// MIT License
+//
+// Copyright (c) 2017-2018 Sunny Chen (daxnet)
+//
+// ============================================================================
+
 using EdaSample.Common.Events.Domain;
 using EdaSample.Common.Repositories;
 using EdaSample.Tests.Models;
@@ -6,7 +21,6 @@ using Moq.Protected;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -43,8 +57,8 @@ namespace EdaSample.Tests
             // Arrange
             var domainEventsList = new List<IDomainEvent>();
             var mockRepository = new Mock<Repository>();
-            
-            mockRepository.Protected().Setup<Task>("PersistDomainEventsAsync", 
+
+            mockRepository.Protected().Setup<Task>("PersistDomainEventsAsync",
                     ItExpr.IsAny<IEnumerable<IDomainEvent>>())
                 .Callback<IEnumerable<IDomainEvent>>(evnts => domainEventsList.AddRange(evnts))
                 .Returns(Task.CompletedTask);
@@ -71,8 +85,8 @@ namespace EdaSample.Tests
                     new BookTitleChangedEvent("Hit Refresh")
                 };
             var mockRepository = new Mock<Repository>();
-            mockRepository.Protected().Setup<Task<IEnumerable<IDomainEvent>>>("LoadDomainEventsAsync", 
-                    ItExpr.IsAny<Type>(), 
+            mockRepository.Protected().Setup<Task<IEnumerable<IDomainEvent>>>("LoadDomainEventsAsync",
+                    ItExpr.IsAny<Type>(),
                     ItExpr.IsAny<Guid>())
                 .Returns(Task.FromResult(domainEventsList.AsEnumerable()));
 
@@ -99,7 +113,7 @@ namespace EdaSample.Tests
                 .Returns(Task.CompletedTask);
 
             var book = new Book();
-            
+
             // Act
             book.ChangeTitle("C# Cookbook");
             await mockRepository.Object.SaveAsync(book);
