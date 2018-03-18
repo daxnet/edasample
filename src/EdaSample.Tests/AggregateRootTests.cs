@@ -13,6 +13,7 @@
 //
 // ============================================================================
 
+using EdaSample.Common;
 using EdaSample.Common.Events.Domain;
 using EdaSample.Common.Repositories;
 using EdaSample.Tests.Models;

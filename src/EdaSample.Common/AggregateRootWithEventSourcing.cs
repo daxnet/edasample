@@ -28,7 +28,7 @@ namespace EdaSample.Common
         #region Private Fields
 
         private readonly Lazy<Dictionary<string, MethodInfo>> registeredHandlers;
-        private readonly ConcurrentQueue<IDomainEvent> uncommittedEvents = new ConcurrentQueue<IDomainEvent>();
+        private readonly Queue<IDomainEvent> uncommittedEvents = new Queue<IDomainEvent>();
         private Guid id;
         private long persistedVersion = 0;
         private object sync = new object();
@@ -146,10 +146,7 @@ namespace EdaSample.Common
         {
             lock (sync)
             {
-                while (!uncommittedEvents.IsEmpty)
-                {
-                    uncommittedEvents.TryDequeue(out var _);
-                }
+                uncommittedEvents.Clear();
             }
         }
 
