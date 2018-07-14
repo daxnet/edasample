@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
+using EdaSample.DataAccess.MongoDB;
 using EdaSample.EventBus.RabbitMQ;
-using EdaSample.EventBus.Simple;
-using EdaSample.EventStores.Dapper;
 using EdaSample.Integration.AspNetCore;
 using EdaSample.Services.Common.Events;
-using EdaSample.Services.Customer.EventHandlers;
-using EdaSample.Services.Customer.Model;
+using EdaSample.Services.Notification.EventHandlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,12 +17,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 
-namespace EdaSample.Services.Customer
+namespace EdaSample.Services.Notification
 {
     public class Startup
     {
         private const string RMQ_EXCHANGE = "EdaSample.Exchange";
-        private const string RMQ_QUEUE = "EdaSample.CustomerServiceQueue";
+        private const string RMQ_QUEUE = "EdaSample.NotificationServiceQueue";
 
         private readonly ILogger logger;
 
@@ -35,22 +34,14 @@ namespace EdaSample.Services.Customer
 
         public IConfiguration Configuration { get; }
 
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            this.logger.LogInformation("正在对服务进行配置...");
-
             services.AddMvc();
-            services.AddOptions();
-            services.Configure<MssqlConfig>(Configuration.GetSection("mssql"));
 
-            services.AddTransient<IEventStore>(serviceProvider => 
-                new DapperEventStore(Configuration["mssql:connectionString"], 
-                    serviceProvider.GetRequiredService<ILogger<DapperEventStore>>()));
-
-            var eventHandlerExecutionContext = new EventHandlerExecutionContext(services, 
+            var eventHandlerExecutionContext = new EventHandlerExecutionContext(services,
                 sc => sc.BuildServiceProvider());
             services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
-            // services.AddSingleton<IEventBus, PassThroughEventBus>();
 
             var connectionFactory = new ConnectionFactory { HostName = "localhost" };
             services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
@@ -59,7 +50,10 @@ namespace EdaSample.Services.Customer
                 RMQ_EXCHANGE,
                 queueName: RMQ_QUEUE));
 
-            this.logger.LogInformation("服务配置完成，已注册到IoC容器！");
+            var mongoServer = Configuration["mongo:server"];
+            var mongoDatabase = Configuration["mongo:database"];
+            var mongoPort = Convert.ToInt32(Configuration["mongo:port"]);
+            services.AddSingleton<IDataAccessObject>(serviceProvider => new MongoDataAccessObject(mongoDatabase, mongoServer, mongoPort));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,7 +61,6 @@ namespace EdaSample.Services.Customer
         {
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
             eventBus.Subscribe<CustomerCreatedEvent, CustomerCreatedEventHandler>();
-            eventBus.Subscribe<CustomerCreatedEvent, AddNewCustomerEventHandler>();
 
             if (env.IsDevelopment())
             {

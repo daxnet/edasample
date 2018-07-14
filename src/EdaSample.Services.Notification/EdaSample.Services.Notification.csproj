@@ -4,30 +4,23 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.4" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
-    <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="2.0.0-dev-00023" />
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EdaSample.Common\EdaSample.Common.csproj" />
+    <ProjectReference Include="..\EdaSample.DataAccess.MongoDB\EdaSample.DataAccess.MongoDB.csproj" />
     <ProjectReference Include="..\EdaSample.EventBus.RabbitMQ\EdaSample.EventBus.RabbitMQ.csproj" />
-    <ProjectReference Include="..\EdaSample.EventBus.Simple\EdaSample.EventBus.Simple.csproj" />
-    <ProjectReference Include="..\EdaSample.EventStores.Dapper\EdaSample.EventStores.Dapper.csproj" />
     <ProjectReference Include="..\EdaSample.Integration.AspNetCore\EdaSample.Integration.AspNetCore.csproj" />
     <ProjectReference Include="..\EdaSample.Services.Common\EdaSample.Services.Common.csproj" />
   </ItemGroup>

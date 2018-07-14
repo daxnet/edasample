@@ -101,10 +101,17 @@ namespace EdaSample.EventBus.RabbitMQ
                 var eventBody = eventArgument.Body;
                 var json = Encoding.UTF8.GetString(eventBody);
                 var @event = (IEvent)JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
-                await this.eventHandlerExecutionContext.HandleEventAsync(@event);
-                if (!autoAck)
+                try
                 {
-                    channel.BasicAck(eventArgument.DeliveryTag, false);
+                    await this.eventHandlerExecutionContext.HandleEventAsync(@event);
+                    if (!autoAck)
+                    {
+                        channel.BasicAck(eventArgument.DeliveryTag, false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "事件处理器执行失败。");
                 }
             };
 

@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using EdaSample.Common.Events;
-using EdaSample.Services.Customer.Events;
+using EdaSample.Services.Common.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace EdaSample.Services.Customer.Controllers
@@ -56,21 +57,23 @@ namespace EdaSample.Services.Customer.Controllers
             var name = (string)model.Name;
             if (string.IsNullOrEmpty(name))
             {
-                return BadRequest();
+                return BadRequest("请指定客户名称。");
             }
 
-            const string sql = "INSERT INTO [dbo].[Customers] ([CustomerId], [CustomerName]) VALUES (@Id, @Name)";
-            using (var connection = new SqlConnection(connectionString))
+            var email = (string)model.Email;
+            if (string.IsNullOrEmpty(email))
             {
-                var customer = new Model.Customer(name);
-                await connection.ExecuteAsync(sql, customer);
-
-                await this.eventBus.PublishAsync(new CustomerCreatedEvent(name));
-
-                this.logger.LogInformation($"客户信息创建成功。");
-
-                return Created(Url.Action("Get", new { id = customer.Id }), customer.Id);
+                return BadRequest("电子邮件地址不能为空。");
             }
+            
+            // 由于数据库更新需要通过事件处理器进行异步更新，因此无法在Controller中得到
+            // 数据库更新后的Customer ID。此处通过Guid.NewGuid获得，实际中可以使用独立
+            // 的Identity Service产生。
+            var customerId = Guid.NewGuid();
+
+            await this.eventBus.PublishAsync(new CustomerCreatedEvent(customerId, name, email));
+
+            return Created(Url.Action("Get", new { id = customerId }), customerId);
         }
     }
 }
