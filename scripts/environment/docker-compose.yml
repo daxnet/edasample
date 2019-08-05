@@ -1,0 +1,22 @@
+version: "3"
+volumes:
+  mongodb_data:
+  rabbitmq_data:
+services:
+  mongodb:
+    image: mongo
+    volumes:
+      - mongodb_data
+    ports:
+      - 27017:27017
+  rabbitmq:
+    image: rabbitmq:3.7.17-management
+    ports:
+      - "5672:5672"
+      - "4369:4369"
+      - "5671:5671"
+      - "25672:25672"
+      - "15672:15672"
+    hostname: edasample-rabbitmq
+    volumes:
+      - rabbitmq_data

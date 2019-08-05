@@ -9,7 +9,7 @@
 //                                           |_|
 // MIT License
 //
-// Copyright (c) 2017-2018 Sunny Chen (daxnet)
+// Copyright (c) 2017-2019 Sunny Chen (daxnet)
 //
 // ============================================================================
 
