@@ -24,6 +24,7 @@ namespace EdaSample.Services.Customer
                 .ConfigureLogging((context, lb) =>
                 {
                     lb.AddFile(LogFileName);
+                    lb.AddConsole();
                 })
                 .UseStartup<Startup>()
                 .Build();

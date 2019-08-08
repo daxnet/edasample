@@ -25,9 +25,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EdaSample.Common\EdaSample.Common.csproj" />
+    <ProjectReference Include="..\EdaSample.DataAccess.MongoDB\EdaSample.DataAccess.MongoDB.csproj" />
     <ProjectReference Include="..\EdaSample.EventBus.RabbitMQ\EdaSample.EventBus.RabbitMQ.csproj" />
     <ProjectReference Include="..\EdaSample.EventBus.Simple\EdaSample.EventBus.Simple.csproj" />
     <ProjectReference Include="..\EdaSample.EventStores.Dapper\EdaSample.EventStores.Dapper.csproj" />
+    <ProjectReference Include="..\EdaSample.EventStores.MongoDB\EdaSample.EventStores.MongoDB.csproj" />
     <ProjectReference Include="..\EdaSample.Integration.AspNetCore\EdaSample.Integration.AspNetCore.csproj" />
     <ProjectReference Include="..\EdaSample.Services.Common\EdaSample.Services.Common.csproj" />
   </ItemGroup>

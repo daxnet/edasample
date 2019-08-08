@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Services.Customer.Model
 {
-    public class MssqlConfig
+    public class PostgreSqlConfig
     {
         public string ConnectionString { get; set; }
     }

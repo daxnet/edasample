@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 
 namespace EdaSample.EventStores.Dapper
 {
@@ -24,11 +25,11 @@ namespace EdaSample.EventStores.Dapper
         public async Task SaveEventAsync<TEvent>(TEvent @event) where TEvent : IEvent
         {
             logger.LogInformation($"DapperEventStore正在更新数据库。Hash Code: {this.GetHashCode()}.");
-            const string sql = @"INSERT INTO [dbo].[Events] 
-([EventId], [EventPayload], [EventTimestamp]) 
+            const string sql = @"INSERT INTO edasample.eventstore 
+(eventid, eventpayload, eventtimestamp) 
 VALUES 
 (@eventId, @eventPayload, @eventTimestamp)";
-            using (var connection = new SqlConnection(this.connectionString))
+            using (var connection = new NpgsqlConnection(this.connectionString))
             {
                 await connection.ExecuteAsync(sql, new
                 {

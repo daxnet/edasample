@@ -24,6 +24,7 @@ namespace EdaSample.Services.Notification
                 .ConfigureLogging((context, lb) =>
                 {
                     lb.AddFile(LogFileName);
+                    lb.AddConsole();
                 })
                 .UseStartup<Startup>()
                 .Build();

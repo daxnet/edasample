@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
+using EdaSample.DataAccess.MongoDB;
 using EdaSample.EventBus.RabbitMQ;
 using EdaSample.EventBus.Simple;
 using EdaSample.EventStores.Dapper;
+using EdaSample.EventStores.MongoDB;
 using EdaSample.Integration.AspNetCore;
 using EdaSample.Services.Common.Events;
 using EdaSample.Services.Customer.EventHandlers;
@@ -16,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson.Serialization;
 using RabbitMQ.Client;
 
 namespace EdaSample.Services.Customer
@@ -41,17 +45,25 @@ namespace EdaSample.Services.Customer
 
             services.AddMvc();
             services.AddOptions();
-            services.Configure<MssqlConfig>(Configuration.GetSection("mssql"));
 
-            services.AddTransient<IEventStore>(serviceProvider => 
-                new DapperEventStore(Configuration["mssql:connectionString"], 
+            // Configure event store.
+            services.Configure<PostgreSqlConfig>(Configuration.GetSection("postgresql"));
+            services.AddTransient<IEventStore>(serviceProvider =>
+                new DapperEventStore(Configuration["postgresql:connectionString"],
                     serviceProvider.GetRequiredService<ILogger<DapperEventStore>>()));
 
+            // Configure data access component.
+            var mongoServer = Configuration["mongo:server"];
+            var mongoDatabase = Configuration["mongo:database"];
+            var mongoPort = Convert.ToInt32(Configuration["mongo:port"]);
+            services.AddSingleton<IDataAccessObject>(serviceProvider => new MongoDataAccessObject(mongoDatabase, mongoServer, mongoPort));
+
+            // Configure event handlers.
             var eventHandlerExecutionContext = new EventHandlerExecutionContext(services, 
                 sc => sc.BuildServiceProvider());
             services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
-            // services.AddSingleton<IEventBus, PassThroughEventBus>();
 
+            // Configure RabbitMQ.
             var connectionFactory = new ConnectionFactory { HostName = "localhost" };
             services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
                 sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),

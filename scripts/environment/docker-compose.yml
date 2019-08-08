@@ -9,6 +9,12 @@ services:
       - mongodb_data
     ports:
       - 27017:27017
+  pgsql:
+    image: postgres:11.4
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: password
   rabbitmq:
     image: rabbitmq:3.7.17-management
     ports:

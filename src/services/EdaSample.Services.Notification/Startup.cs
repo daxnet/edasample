@@ -37,6 +37,8 @@ namespace EdaSample.Services.Notification
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            this.logger.LogInformation("正在对服务进行配置...");
+
             services.AddMvc();
 
             var eventHandlerExecutionContext = new EventHandlerExecutionContext(services,
@@ -54,6 +56,8 @@ namespace EdaSample.Services.Notification
             var mongoDatabase = Configuration["mongo:database"];
             var mongoPort = Convert.ToInt32(Configuration["mongo:port"]);
             services.AddSingleton<IDataAccessObject>(serviceProvider => new MongoDataAccessObject(mongoDatabase, mongoServer, mongoPort));
+
+            this.logger.LogInformation("服务配置完成，已注册到IoC容器！");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

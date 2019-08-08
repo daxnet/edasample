@@ -1,11 +1,12 @@
-﻿using System;
+﻿using EdaSample.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EdaSample.Services.Customer.Model
 {
-    public class Customer
+    public class Customer : IEntity
     {
         public Customer()
             : this(Guid.NewGuid(), null)
@@ -18,6 +19,13 @@ namespace EdaSample.Services.Customer.Model
         {
             this.Id = id;
             this.Name = name;
+        }
+
+        public Customer(Guid id, string name, string email)
+        {
+            Id = id;
+            Name = name;
+            Email = email;
         }
 
         public Guid Id { get; set; }
