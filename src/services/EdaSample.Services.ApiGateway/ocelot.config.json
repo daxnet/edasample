@@ -1,0 +1,42 @@
+{
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/api/products",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 49563
+        }
+      ],
+      "UpstreamPathTemplate": "/products-service",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/products/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 49563
+        }
+      ],
+      "UpstreamPathTemplate": "/products-service/{id}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "Priority": 0
+    },
+    {
+      "DownstreamPathTemplate": "/images/{imageName}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 49563
+        }
+      ],
+      "UpstreamPathTemplate": "/products-service/images/{imageName}",
+      "UpstreamHttpMethod": [ "Get" ],
+      "Priority": 1
+    }
+  ]
+}
