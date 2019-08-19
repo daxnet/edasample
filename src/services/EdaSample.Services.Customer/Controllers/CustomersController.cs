@@ -1,9 +1,11 @@
 ﻿using Dapper;
+using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
 using EdaSample.Services.Common.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -20,34 +22,24 @@ namespace EdaSample.Services.Customer.Controllers
         private readonly string connectionString;
         private readonly IEventBus eventBus;
         private readonly ILogger logger;
+        private readonly IDataAccessObject dao;
 
         public CustomersController(IConfiguration configuration,
             IEventBus eventBus,
+            IDataAccessObject dao,
             ILogger<CustomersController> logger)
         {
             this.configuration = configuration;
-            this.connectionString = configuration["mssql:connectionString"];
+            this.connectionString = configuration["postgresql:connectionString"];
             this.eventBus = eventBus;
+            this.dao = dao;
             this.logger = logger;
         }
 
 
         // 获取指定ID的客户信息
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id)
-        {
-            const string sql = "SELECT [CustomerId] AS Id, [CustomerName] AS Name FROM [dbo].[Customers] WHERE [CustomerId]=@id";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                var customer = await connection.QueryFirstOrDefaultAsync<Model.Customer>(sql, new { id });
-                if (customer == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(customer);
-            }
-        }
+        public async Task<IActionResult> Get(Guid id) => Ok(await dao.GetByIdAsync<Model.Customer>(id));
 
         // 创建新的客户信息
         [HttpPost]

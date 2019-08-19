@@ -37,6 +37,19 @@
       "UpstreamPathTemplate": "/products-service/images/{imageName}",
       "UpstreamHttpMethod": [ "Get" ],
       "Priority": 1
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/customers/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 51689
+        }
+      ],
+      "UpstreamPathTemplate": "/customer-service/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
     }
   ]
 }
