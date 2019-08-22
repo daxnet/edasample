@@ -64,7 +64,8 @@ namespace EdaSample.Services.Customer
             services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
 
             // Configure RabbitMQ.
-            var connectionFactory = new ConnectionFactory { HostName = "localhost" };
+            var rabbitServer = Configuration["rabbit:server"];
+            var connectionFactory = new ConnectionFactory { HostName = rabbitServer };
             services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
                 sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),
                 sp.GetRequiredService<IEventHandlerExecutionContext>(),

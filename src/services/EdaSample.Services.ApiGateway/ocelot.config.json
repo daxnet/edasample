@@ -6,7 +6,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 49563
+          "Port": 5020
         }
       ],
       "UpstreamPathTemplate": "/products-service",
@@ -18,7 +18,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 49563
+          "Port": 5020
         }
       ],
       "UpstreamPathTemplate": "/products-service/{id}",
@@ -31,7 +31,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 49563
+          "Port": 5020
         }
       ],
       "UpstreamPathTemplate": "/products-service/images/{imageName}",
@@ -45,7 +45,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 51689
+          "Port": 5010
         }
       ],
       "UpstreamPathTemplate": "/customer-service/{id}",
