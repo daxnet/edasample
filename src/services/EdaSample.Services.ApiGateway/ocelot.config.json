@@ -38,9 +38,33 @@
       "UpstreamHttpMethod": [ "Get" ],
       "Priority": 1
     },
+    {
+      "DownstreamPathTemplate": "/api/products/create-many",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5020
+        }
+      ],
+      "UpstreamPathTemplate": "/products-service/create-many",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/products",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5020
+        }
+      ],
+      "UpstreamPathTemplate": "/products-service",
+      "UpstreamHttpMethod": [ "Delete" ]
+    },
 
     {
-      "DownstreamPathTemplate": "/api/customers/{id}",
+      "DownstreamPathTemplate": "/api/customers/{name}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -48,8 +72,32 @@
           "Port": 5010
         }
       ],
-      "UpstreamPathTemplate": "/customer-service/{id}",
+      "UpstreamPathTemplate": "/customer-service/{name}",
       "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/customers",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5010
+        }
+      ],
+      "UpstreamPathTemplate": "/customer-service",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/customers/{name}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5010
+        }
+      ],
+      "UpstreamPathTemplate": "/customer-service/{name}",
+      "UpstreamHttpMethod": [ "Delete" ]
     }
   ]
 }

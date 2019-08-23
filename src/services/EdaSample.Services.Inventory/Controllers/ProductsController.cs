@@ -46,6 +46,29 @@ namespace EdaSample.Services.Inventory.Controllers
             return Created(Url.Action("GetByKeyAsync", new { id }), id);
         }
 
+        [HttpPost("create-many")]
+        public async Task<IActionResult> CreateManyAsync(IEnumerable<Product> products)
+        {
+            foreach(var product in products )
+            {
+                await CreateAsync(product);
+            }
+
+            return new NoContentResult();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAllAsync()
+        {
+            var products = await this.dataAccessObject.GetAllAsync<Product>();
+            foreach(var product in products)
+            {
+                await this.dataAccessObject.DeleteByIdAsync<Product>(product.Id);
+            }
+
+            return new NoContentResult();
+        }
+
         [HttpGet("{id}")]
         public async Task<Product> GetByKeyAsync(Guid id)
         {

@@ -1,16 +1,26 @@
-﻿using Dapper;
+﻿// ============================================================================
+//   ______    _        _____                       _
+//  |  ____|  | |      / ____|                     | |
+//  | |__   __| | __ _| (___   __ _ _ __ ___  _ __ | | ___
+//  |  __| / _` |/ _` |\___ \ / _` | '_ ` _ \| '_ \| |/ _ \
+//  | |___| (_| | (_| |____) | (_| | | | | | | |_) | |  __/
+//  |______\__,_|\__,_|_____/ \__,_|_| |_| |_| .__/|_|\___|
+//                                           | |
+//                                           |_|
+// MIT License
+//
+// Copyright (c) 2017-2019 Sunny Chen (daxnet)
+//
+// ============================================================================
+
 using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
 using EdaSample.Services.Common.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace EdaSample.Services.Customer.Controllers
@@ -18,12 +28,25 @@ namespace EdaSample.Services.Customer.Controllers
     [Route("api/[controller]")]
     public class CustomersController : Controller
     {
+        #region Private Fields
+
         private readonly IConfiguration configuration;
         private readonly string connectionString;
+        private readonly IDataAccessObject dao;
         private readonly IEventBus eventBus;
         private readonly ILogger logger;
-        private readonly IDataAccessObject dao;
 
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CustomersController"/> class.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="eventBus">The event bus.</param>
+        /// <param name="dao">The DAO.</param>
+        /// <param name="logger">The logger.</param>
         public CustomersController(IConfiguration configuration,
             IEventBus eventBus,
             IDataAccessObject dao,
@@ -36,10 +59,9 @@ namespace EdaSample.Services.Customer.Controllers
             this.logger = logger;
         }
 
+        #endregion Public Constructors
 
-        // 获取指定ID的客户信息
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(Guid id) => Ok(await dao.GetByIdAsync<Model.Customer>(id));
+        #region Public Methods
 
         // 创建新的客户信息
         [HttpPost]
@@ -57,7 +79,7 @@ namespace EdaSample.Services.Customer.Controllers
             {
                 return BadRequest("电子邮件地址不能为空。");
             }
-            
+
             // 由于数据库更新需要通过事件处理器进行异步更新，因此无法在Controller中得到
             // 数据库更新后的Customer ID。此处通过Guid.NewGuid获得，实际中可以使用独立
             // 的Identity Service产生。
@@ -65,7 +87,35 @@ namespace EdaSample.Services.Customer.Controllers
 
             await this.eventBus.PublishAsync(new CustomerCreatedEvent(customerId, name, email));
 
-            return Created(Url.Action("Get", new { id = customerId }), customerId);
+            return Created(Url.Action("Get", new { name }), customerId);
         }
+
+        [HttpDelete("{name}")]
+        public async Task<IActionResult> DeleteByNameAsync(string name)
+        {
+            var customers = await dao.FindBySpecificationAsync<Model.Customer>(p => p.Name == name);
+            if (customers?.Count() == 0)
+            {
+                return NotFound();
+            }
+
+            await dao.DeleteByIdAsync<Model.Customer>(customers.First().Id);
+            return NoContent();
+        }
+
+        // 获取指定ID的客户信息
+        [HttpGet("{name}")]
+        public async Task<IActionResult> Get(string name)
+        {
+            var customers = await dao.FindBySpecificationAsync<Model.Customer>(p => p.Name == name);
+            if (customers?.Count() == 0)
+            {
+                return NotFound();
+            }
+
+            return Ok(customers.First());
+        }
+
+        #endregion Public Methods
     }
 }
