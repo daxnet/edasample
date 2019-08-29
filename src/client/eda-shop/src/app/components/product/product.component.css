@@ -1,0 +1,9 @@
+.card {
+    margin: 5px 0px 10px;
+}
+
+.card-text-price {
+    color: maroon;
+    font-size: x-large;
+    font-weight: bold;
+}
