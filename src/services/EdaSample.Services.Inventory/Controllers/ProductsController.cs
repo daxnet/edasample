@@ -1,4 +1,19 @@
-﻿using EdaSample.Common.DataAccess;
+﻿// ============================================================================
+//   ______    _        _____                       _
+//  |  ____|  | |      / ____|                     | |
+//  | |__   __| | __ _| (___   __ _ _ __ ___  _ __ | | ___
+//  |  __| / _` |/ _` |\___ \ / _` | '_ ` _ \| '_ \| |/ _ \
+//  | |___| (_| | (_| |____) | (_| | | | | | | |_) | |  __/
+//  |______\__,_|\__,_|_____/ \__,_|_| |_| |_| .__/|_|\___|
+//                                           | |
+//                                           |_|
+// MIT License
+//
+// Copyright (c) 2017-2019 Sunny Chen (daxnet)
+//
+// ============================================================================
+
+using EdaSample.Common.DataAccess;
 using EdaSample.Services.Inventory.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,17 +28,29 @@ namespace EdaSample.Services.Inventory.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
+        #region Private Fields
+
         private readonly IDataAccessObject dataAccessObject;
         private readonly ILogger logger;
 
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProductsController"/> class.
+        /// </summary>
+        /// <param name="dataAccessObject">The data access object.</param>
+        /// <param name="logger">The logger.</param>
         public ProductsController(IDataAccessObject dataAccessObject, ILogger<ProductsController> logger)
         {
             this.dataAccessObject = dataAccessObject;
             this.logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<Product>> GetProducts() => await this.dataAccessObject.GetAllAsync<Product>();
+        #endregion Public Constructors
+
+        #region Public Methods
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Product product)
@@ -49,7 +76,7 @@ namespace EdaSample.Services.Inventory.Controllers
         [HttpPost("create-many")]
         public async Task<IActionResult> CreateManyAsync(IEnumerable<Product> products)
         {
-            foreach(var product in products )
+            foreach (var product in products)
             {
                 await CreateAsync(product);
             }
@@ -61,7 +88,7 @@ namespace EdaSample.Services.Inventory.Controllers
         public async Task<IActionResult> DeleteAllAsync()
         {
             var products = await this.dataAccessObject.GetAllAsync<Product>();
-            foreach(var product in products)
+            foreach (var product in products)
             {
                 await this.dataAccessObject.DeleteByIdAsync<Product>(product.Id);
             }
@@ -74,5 +101,10 @@ namespace EdaSample.Services.Inventory.Controllers
         {
             return await this.dataAccessObject.GetByIdAsync<Product>(id);
         }
+
+        [HttpGet]
+        public async Task<IEnumerable<Product>> GetProducts() => await this.dataAccessObject.GetAllAsync<Product>();
+
+        #endregion Public Methods
     }
 }

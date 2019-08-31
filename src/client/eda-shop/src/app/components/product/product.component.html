@@ -1,14 +1,15 @@
 <div class="card border-success mb-3">
     <div class="row align-items-center no-gutters">
-        <div class="col-md-4" style="max-width: 120px;">
+        <div class="col-md-3" style="margin: 5px; max-width: 120px;">
             <img src={{getProductImageUrl()}} class="card-img" alt="{{product.name}}">
         </div>
-        <div class="col-md-8">
+        <div class="col-md-9">
             <div class="card-body">
                 <h5 class="card-title">{{product.name}}</h5>
                 <p class="card-text">{{product.description}}</p>
                 <p>
                     <span class="card-text card-text-price">${{product.price}}</span>
+                    <button type="button" class="float-right btn btn-primary btn-sm" (click)="showMessage()">Add to Cart</button>
                 </p>
             </div>
         </div>
