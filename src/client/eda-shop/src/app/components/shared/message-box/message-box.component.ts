@@ -14,7 +14,7 @@ export interface MessageBoxData {
 export class MessageBoxComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<MessageBoxComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: MessageBoxData) { }
+              @Inject(MAT_DIALOG_DATA) public data: MessageBoxData) { }
 
   ngOnInit() {
   }

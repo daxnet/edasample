@@ -25,7 +25,7 @@ export class ProductComponent implements OnInit {
   showMessage() {
     this.dialog.open(MessageBoxComponent, {
       width: '250px',
-      data: { title: 'aaa', text: 'bbbb'}
+      data: { title: 'Success', text: 'Product added successfully.'}
     });
   }
 }

@@ -7,11 +7,10 @@
 </div> -->
 
 
-<h1 mat-dialog-title>Hi {{data.title}}</h1>
+<h1 mat-dialog-title>{{data.title}}</h1>
 <div mat-dialog-content>
-  <p>What's your favorite animal?</p>
+  <p>{{data.text}}</p>
 </div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onOkClick()">No Thanks</button>
-  <button mat-button (click)="onOkClick()">No Thanks</button>
+<div mat-dialog-actions class="float-right">
+  <button mat-flat-button color="primary" (click)="onOkClick()">OK</button>
 </div>
