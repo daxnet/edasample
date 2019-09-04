@@ -5,7 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EdaSample.EventBus.Simple
+namespace EdaSample.Messaging.Simple
 {
     internal sealed class MessageQueue
     {

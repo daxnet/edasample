@@ -16,7 +16,9 @@ namespace EdaSample.Common.Events
             this.messageHandlerContext = messageHandlerContext;
         }
 
-        public abstract Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : IMessage;
+        Task IMessagePublisher.PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken) => this.PublishEventAsync(message as IEvent);
+
+
 
         public abstract void Subscribe<TMessage, TMessageHandler>()
             where TMessage : IMessage
@@ -41,6 +43,9 @@ namespace EdaSample.Common.Events
         {
             Dispose(true);
         }
+
+        public abstract Task PublishEventAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent;
+
         #endregion
 
     }

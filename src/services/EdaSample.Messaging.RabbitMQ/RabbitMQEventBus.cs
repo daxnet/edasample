@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EdaSample.EventBus.RabbitMQ
+namespace EdaSample.Messaging.RabbitMQ
 {
     public class RabbitMQEventBus : BaseEventBus
     {
@@ -47,7 +47,7 @@ namespace EdaSample.EventBus.RabbitMQ
             logger.LogInformation($"RabbitMQEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
         }
 
-        public override Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task PublishEventAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         {
             var json = JsonConvert.SerializeObject(@event, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
             var eventBody = Encoding.UTF8.GetBytes(json);

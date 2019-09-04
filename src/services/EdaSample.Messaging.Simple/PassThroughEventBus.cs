@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EdaSample.EventBus.Simple
+namespace EdaSample.Messaging.Simple
 {
     public sealed class PassThroughEventBus : BaseEventBus
     {
@@ -29,11 +29,11 @@ namespace EdaSample.EventBus.Simple
         private async void MessageQueue_MessagePushed(object sender, MessageProcessedEventArgs e)
             => await this.messageHandlerContext.HandleMessageAsync(e.Message);
 
-        public override Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
+        public override Task PublishEventAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         {
             return Task.Factory.StartNew(() =>
             {
-                messageQueue.Push(message);
+                messageQueue.Push(@event);
             });
         }
 

@@ -6,7 +6,7 @@ using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
 using EdaSample.Common.Messages;
 using EdaSample.DataAccess.MongoDB;
-using EdaSample.EventBus.RabbitMQ;
+using EdaSample.Messaging.RabbitMQ;
 using EdaSample.Integration.AspNetCore;
 using EdaSample.Services.Common.Events;
 using EdaSample.Services.Notification.EventHandlers;
