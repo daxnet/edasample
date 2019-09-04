@@ -1,4 +1,5 @@
 ﻿using EdaSample.Common.Events;
+using EdaSample.Common.Messages;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,32 +13,35 @@ namespace EdaSample.EventBus.Simple
 {
     public sealed class PassThroughEventBus : BaseEventBus
     {
-        private readonly EventQueue eventQueue = new EventQueue();
+        private readonly MessageQueue messageQueue = new MessageQueue();
         private readonly ILogger logger;
 
-        public PassThroughEventBus(IEventHandlerExecutionContext context,
+        public PassThroughEventBus(IMessageHandlerContext context,
             ILogger<PassThroughEventBus> logger)
             : base(context)
         {
             this.logger = logger;
             logger.LogInformation($"PassThroughEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
 
-            eventQueue.EventPushed += EventQueue_EventPushed;
+            messageQueue.MessagePushed += MessageQueue_MessagePushed;
         }
 
-        private async void EventQueue_EventPushed(object sender, EventProcessedEventArgs e)
-            => await this.eventHandlerExecutionContext.HandleEventAsync(e.Event);
+        private async void MessageQueue_MessagePushed(object sender, MessageProcessedEventArgs e)
+            => await this.messageHandlerContext.HandleMessageAsync(e.Message);
 
-        public override Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+        public override Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
         {
-            return Task.Factory.StartNew(() => eventQueue.Push(@event));
+            return Task.Factory.StartNew(() =>
+            {
+                messageQueue.Push(message);
+            });
         }
 
         public override void Subscribe<TEvent, TEventHandler>()
         {
-            if (!this.eventHandlerExecutionContext.HandlerRegistered<TEvent, TEventHandler>())
+            if (!this.messageHandlerContext.HandlerRegistered<TEvent, TEventHandler>())
             {
-                this.eventHandlerExecutionContext.RegisterHandler<TEvent, TEventHandler>();
+                this.messageHandlerContext.RegisterHandler<TEvent, TEventHandler>();
             }
         }
 
@@ -51,7 +55,7 @@ namespace EdaSample.EventBus.Simple
             {
                 if (disposing)
                 {
-                    this.eventQueue.EventPushed -= EventQueue_EventPushed;
+                    this.messageQueue.MessagePushed -= MessageQueue_MessagePushed;
                     logger.LogInformation($"PassThroughEventBus已经被Dispose。Hash Code:{this.GetHashCode()}.");
                 }
 

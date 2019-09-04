@@ -1,6 +1,8 @@
-﻿namespace EdaSample.Common.Events
+﻿using EdaSample.Common.Messages;
+
+namespace EdaSample.Common.Events
 {
-    public interface IEventBus : IEventPublisher, IEventSubscriber
+    public interface IEventBus : IMessageBus, IEventPublisher, IEventSubscriber
     {
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
+using EdaSample.Common.Messages;
 using EdaSample.DataAccess.MongoDB;
 using EdaSample.EventBus.RabbitMQ;
 using EdaSample.EventBus.Simple;
@@ -59,16 +60,16 @@ namespace EdaSample.Services.Customer
             services.AddSingleton<IDataAccessObject>(serviceProvider => new MongoDataAccessObject(mongoDatabase, mongoServer, mongoPort));
 
             // Configure event handlers.
-            var eventHandlerExecutionContext = new EventHandlerExecutionContext(services, 
+            var eventHandlerExecutionContext = new MessageHandlerContext(services, 
                 sc => sc.BuildServiceProvider());
-            services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
+            services.AddSingleton<IMessageHandlerContext>(eventHandlerExecutionContext);
 
             // Configure RabbitMQ.
             var rabbitServer = Configuration["rabbit:server"];
             var connectionFactory = new ConnectionFactory { HostName = rabbitServer };
             services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
                 sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),
-                sp.GetRequiredService<IEventHandlerExecutionContext>(),
+                sp.GetRequiredService<IMessageHandlerContext>(),
                 RMQ_EXCHANGE,
                 queueName: RMQ_QUEUE));
 

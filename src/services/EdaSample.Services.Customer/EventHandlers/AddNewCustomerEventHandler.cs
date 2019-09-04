@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Services.Customer.EventHandlers
 {
-    public class AddNewCustomerEventHandler : EdaSample.Common.Events.EventHandler<CustomerCreatedEvent>
+    public class AddNewCustomerEventHandler : EdaSample.Common.Events.BaseEventHandler<CustomerCreatedEvent>
     {
         private readonly ILogger logger;
         private readonly IDataAccessObject dao;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
+using EdaSample.Common.Messages;
 using EdaSample.DataAccess.MongoDB;
 using EdaSample.EventBus.RabbitMQ;
 using EdaSample.Integration.AspNetCore;
@@ -41,14 +42,14 @@ namespace EdaSample.Services.Notification
 
             services.AddMvc();
 
-            var eventHandlerExecutionContext = new EventHandlerExecutionContext(services,
+            var eventHandlerExecutionContext = new MessageHandlerContext(services,
                 sc => sc.BuildServiceProvider());
-            services.AddSingleton<IEventHandlerExecutionContext>(eventHandlerExecutionContext);
+            services.AddSingleton<IMessageHandlerContext>(eventHandlerExecutionContext);
 
             var connectionFactory = new ConnectionFactory { HostName = "localhost" };
             services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
                 sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),
-                sp.GetRequiredService<IEventHandlerExecutionContext>(),
+                sp.GetRequiredService<IMessageHandlerContext>(),
                 RMQ_EXCHANGE,
                 queueName: RMQ_QUEUE));
 

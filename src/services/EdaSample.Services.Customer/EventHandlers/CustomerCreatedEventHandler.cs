@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Services.Customer.EventHandlers
 {
-    public class CustomerCreatedEventHandler : EdaSample.Common.Events.EventHandler<CustomerCreatedEvent>
+    public class CustomerCreatedEventHandler : EdaSample.Common.Events.BaseEventHandler<CustomerCreatedEvent>
     {
         private readonly IEventStore eventStore;
         private readonly ILogger logger;

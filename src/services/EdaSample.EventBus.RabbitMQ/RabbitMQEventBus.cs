@@ -1,4 +1,5 @@
 ﻿using EdaSample.Common.Events;
+using EdaSample.Common.Messages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -24,7 +25,7 @@ namespace EdaSample.EventBus.RabbitMQ
 
         public RabbitMQEventBus(IConnectionFactory connectionFactory,
             ILogger<RabbitMQEventBus> logger,
-            IEventHandlerExecutionContext context,
+            IMessageHandlerContext context,
             string exchangeName,
             string exchangeType = ExchangeType.Fanout,
             string queueName = null,
@@ -59,9 +60,9 @@ namespace EdaSample.EventBus.RabbitMQ
 
         public override void Subscribe<TEvent, TEventHandler>()
         {
-            if (!this.eventHandlerExecutionContext.HandlerRegistered<TEvent, TEventHandler>())
+            if (!this.messageHandlerContext.HandlerRegistered<TEvent, TEventHandler>())
             {
-                this.eventHandlerExecutionContext.RegisterHandler<TEvent, TEventHandler>();
+                this.messageHandlerContext.RegisterHandler<TEvent, TEventHandler>();
                 this.channel.QueueBind(this.queueName, this.exchangeName, typeof(TEvent).FullName);
             }
         }
@@ -103,7 +104,7 @@ namespace EdaSample.EventBus.RabbitMQ
                 var @event = (IEvent)JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
                 try
                 {
-                    await this.eventHandlerExecutionContext.HandleEventAsync(@event);
+                    await this.messageHandlerContext.HandleMessageAsync(@event);
                     if (!autoAck)
                     {
                         channel.BasicAck(eventArgument.DeliveryTag, false);

@@ -1,11 +1,9 @@
-﻿using System;
+﻿using EdaSample.Common.Messages;
+using System;
 
 namespace EdaSample.Common.Events
 {
-    public interface IEvent
+    public interface IEvent : IMessage
     {
-        Guid Id { get; }
-
-        DateTime Timestamp { get; }
     }
 }

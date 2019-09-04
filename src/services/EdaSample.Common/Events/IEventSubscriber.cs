@@ -1,11 +1,9 @@
-﻿using System;
+﻿using EdaSample.Common.Messages;
+using System;
 
 namespace EdaSample.Common.Events
 {
-    public interface IEventSubscriber : IDisposable
+    public interface IEventSubscriber : IMessageSubscriber
     {
-        void Subscribe<TEvent, TEventHandler>()
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>;
     }
 }

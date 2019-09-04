@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Commands\" />
-    <Folder Include="Messages\" />
   </ItemGroup>
 
 </Project>

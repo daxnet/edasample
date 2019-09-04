@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EdaSample.Common.Messages;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -8,18 +9,18 @@ namespace EdaSample.Common.Events
 {
     public abstract class BaseEventBus : IEventBus
     {
-        protected readonly IEventHandlerExecutionContext eventHandlerExecutionContext;
+        protected readonly IMessageHandlerContext messageHandlerContext;
 
-        protected BaseEventBus(IEventHandlerExecutionContext eventHandlerExecutionContext)
+        protected BaseEventBus(IMessageHandlerContext messageHandlerContext)
         {
-            this.eventHandlerExecutionContext = eventHandlerExecutionContext;
+            this.messageHandlerContext = messageHandlerContext;
         }
 
-        public abstract Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent;
+        public abstract Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : IMessage;
 
-        public abstract void Subscribe<TEvent, TEventHandler>()
-            where TEvent : IEvent
-            where TEventHandler : IEventHandler<TEvent>;
+        public abstract void Subscribe<TMessage, TMessageHandler>()
+            where TMessage : IMessage
+            where TMessageHandler : IMessageHandler<TMessage>;
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
@@ -30,29 +31,15 @@ namespace EdaSample.Common.Events
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
 
                 disposedValue = true;
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~EventBus() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
         #endregion
 
