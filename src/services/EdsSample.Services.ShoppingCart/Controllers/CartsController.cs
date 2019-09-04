@@ -13,6 +13,7 @@ namespace EdsSample.Services.ShoppingCart.Controllers
     [ApiController]
     public class CartsController : ControllerBase
     {
+
         #region Private Fields
 
         private readonly IDataAccessObject dataAccessObject;
@@ -47,6 +48,43 @@ namespace EdsSample.Services.ShoppingCart.Controllers
             return Ok(cart);
         }
 
+        [HttpPost("add-items/{customerId}")]
+        public async Task<IActionResult> AddItemsAsync(Guid customerId, [FromBody] IEnumerable<CartItem> cartItems)
+        {
+            var cart = (await this.dataAccessObject.FindBySpecificationAsync<Cart>(c => c.CustomerId == customerId))
+                .FirstOrDefault();
+            if (cart == null)
+            {
+                cart = await this.CreateCartAsync(customerId);
+            }
+
+            foreach(var cartItem in cartItems)
+            {
+                cart.AddOrUpdateItem(cartItem);
+            }
+            await this.dataAccessObject.UpdateByIdAsync(cart.Id, cart);
+            return Ok(cart);
+        }
+
+        [HttpGet("get-by-customer/{customerId}")]
+        public async Task<IActionResult> GetCartByCustomerIdAsync(Guid customerId)
+        {
+            var cart = (await this.dataAccessObject.FindBySpecificationAsync<Cart>(c => c.CustomerId == customerId))
+                .FirstOrDefault();
+            if (cart == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(cart);
+        }
+
+        //[]
+        //public async Task<IActionResult> Checkout(Guid cartId)
+        //{
+
+        //}
+
         #endregion Public Methods
 
         #region Private Methods
@@ -59,5 +97,6 @@ namespace EdsSample.Services.ShoppingCart.Controllers
         }
 
         #endregion Private Methods
+
     }
 }
