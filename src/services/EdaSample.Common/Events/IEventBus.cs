@@ -2,7 +2,7 @@
 
 namespace EdaSample.Common.Events
 {
-    public interface IEventBus : IMessageBus, IEventPublisher, IEventSubscriber
+    public interface IEventBus : IMessageBus<IEvent, IEventHandler>, IEventPublisher, IEventSubscriber
     {
     }
 }

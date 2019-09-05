@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Folder Include="Commands\" />
+    <Folder Include="Events\Domain\" />
   </ItemGroup>
 
 </Project>

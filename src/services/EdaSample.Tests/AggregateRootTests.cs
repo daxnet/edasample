@@ -14,7 +14,7 @@
 // ============================================================================
 
 using EdaSample.Common;
-using EdaSample.Common.Events.Domain;
+using EdaSample.Common.Events;
 using EdaSample.Common.Repositories;
 using EdaSample.Tests.Models;
 using Moq;

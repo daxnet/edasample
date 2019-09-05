@@ -31,13 +31,13 @@ namespace EdaSample.Common.Messages
 
         bool HandlerRegistered<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler<TMessage>;
+            where TMessageHandler : IMessageHandler;
 
         bool HandlerRegistered(Type messageType, Type messageHandlerType);
 
         void RegisterHandler<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler<TMessage>;
+            where TMessageHandler : IMessageHandler;
 
         void RegisterHandler(Type messageType, Type messageHandlerType);
 

@@ -1,4 +1,4 @@
-﻿using EdaSample.Common.Events.Domain;
+﻿using EdaSample.Common.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;

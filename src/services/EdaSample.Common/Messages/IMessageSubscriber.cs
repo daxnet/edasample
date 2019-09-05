@@ -4,10 +4,12 @@ using System.Text;
 
 namespace EdaSample.Common.Messages
 {
-    public interface IMessageSubscriber
+    public interface IMessageSubscriber<in TBaseMessageType, in TBaseMessageHandlerType>
+        where TBaseMessageType : IMessage
+        where TBaseMessageHandlerType : IMessageHandler
     {
         void Subscribe<TMessage, TMessageHandler>()
-            where TMessage : IMessage
-            where TMessageHandler : IMessageHandler<TMessage>;
+            where TMessage : TBaseMessageType
+            where TMessageHandler : TBaseMessageHandlerType;
     }
 }

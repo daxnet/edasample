@@ -15,7 +15,7 @@
 
 using System;
 
-namespace EdaSample.Common.Events.Domain
+namespace EdaSample.Common.Events
 {
     public interface IDomainEvent : IEvent
     {

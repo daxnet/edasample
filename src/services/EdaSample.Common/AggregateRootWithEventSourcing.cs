@@ -13,7 +13,7 @@
 //
 // ============================================================================
 
-using EdaSample.Common.Events.Domain;
+using EdaSample.Common.Events;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

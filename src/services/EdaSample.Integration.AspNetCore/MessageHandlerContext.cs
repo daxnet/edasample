@@ -71,7 +71,7 @@ namespace EdaSample.Integration.AspNetCore
 
         public bool HandlerRegistered<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler<TMessage>
+            where TMessageHandler : IMessageHandler
             => this.HandlerRegistered(typeof(TMessage), typeof(TMessageHandler));
 
         public bool HandlerRegistered(Type eventType, Type handlerType)
@@ -86,7 +86,7 @@ namespace EdaSample.Integration.AspNetCore
 
         public void RegisterHandler<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler<TMessage>
+            where TMessageHandler : IMessageHandler
             => this.RegisterHandler(typeof(TMessage), typeof(TMessageHandler));
 
         public void RegisterHandler(Type eventType, Type handlerType)

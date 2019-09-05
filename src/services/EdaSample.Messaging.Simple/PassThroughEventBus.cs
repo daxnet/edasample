@@ -1,55 +1,81 @@
-﻿using EdaSample.Common.Events;
+﻿// ============================================================================
+//   ______    _        _____                       _
+//  |  ____|  | |      / ____|                     | |
+//  | |__   __| | __ _| (___   __ _ _ __ ___  _ __ | | ___
+//  |  __| / _` |/ _` |\___ \ / _` | '_ ` _ \| '_ \| |/ _ \
+//  | |___| (_| | (_| |____) | (_| | | | | | | |_) | |  __/
+//  |______\__,_|\__,_|_____/ \__,_|_| |_| |_| .__/|_|\___|
+//                                           | |
+//                                           |_|
+// MIT License
+//
+// Copyright (c) 2017-2019 Sunny Chen (daxnet)
+//
+// ============================================================================
+
+using EdaSample.Common.Events;
 using EdaSample.Common.Messages;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace EdaSample.Messaging.Simple
 {
-    public sealed class PassThroughEventBus : BaseEventBus
+    public sealed class PassThroughEventBus : IEventBus
     {
-        private readonly MessageQueue messageQueue = new MessageQueue();
-        private readonly ILogger logger;
+        #region Private Fields
 
-        public PassThroughEventBus(IMessageHandlerContext context,
-            ILogger<PassThroughEventBus> logger)
-            : base(context)
+        private readonly ILogger logger;
+        private readonly IMessageHandlerContext messageHandlerContext;
+        private readonly MessageQueue messageQueue = new MessageQueue();
+        private bool disposedValue;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        public PassThroughEventBus(IMessageHandlerContext messageHandlerContext,
+                    ILogger<PassThroughEventBus> logger)
         {
+            this.messageHandlerContext = messageHandlerContext;
             this.logger = logger;
             logger.LogInformation($"PassThroughEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
 
             messageQueue.MessagePushed += MessageQueue_MessagePushed;
         }
 
-        private async void MessageQueue_MessagePushed(object sender, MessageProcessedEventArgs e)
-            => await this.messageHandlerContext.HandleMessageAsync(e.Message);
+        #endregion Public Constructors
 
-        public override Task PublishEventAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
+        #region Public Methods
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        public Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default) where TMessage : IEvent
         {
             return Task.Factory.StartNew(() =>
             {
-                messageQueue.Push(@event);
+                messageQueue.Push(message);
             });
         }
 
-        public override void Subscribe<TEvent, TEventHandler>()
+        public void Subscribe<TMessage, TMessageHandler>()
+            where TMessage : IEvent
+            where TMessageHandler : IEventHandler
         {
-            if (!this.messageHandlerContext.HandlerRegistered<TEvent, TEventHandler>())
+            if (!this.messageHandlerContext.HandlerRegistered<TMessage, TMessageHandler>())
             {
-                this.messageHandlerContext.RegisterHandler<TEvent, TEventHandler>();
+                this.messageHandlerContext.RegisterHandler<TMessage, TMessageHandler>();
             }
         }
 
-        #region IDisposable Support
+        #endregion Public Methods
 
-        private bool disposedValue;
+        #region Private Methods
 
-        protected override void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (!disposedValue)
             {
@@ -63,6 +89,8 @@ namespace EdaSample.Messaging.Simple
             }
         }
 
-        #endregion
+        private async void MessageQueue_MessagePushed(object sender, MessageProcessedEventArgs e) => await this.messageHandlerContext.HandleMessageAsync(e.Message);
+
+        #endregion Private Methods
     }
 }

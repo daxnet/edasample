@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using EdaSample.Common.DataAccess;
+using EdaSample.Common.Events;
 using EdaSample.Services.Common.Events;
 using EdaSample.Services.Customer.Model;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Services.Customer.EventHandlers
 {
-    public class AddNewCustomerEventHandler : EdaSample.Common.Events.BaseEventHandler<CustomerCreatedEvent>
+    public class AddNewCustomerEventHandler : BaseEventHandler<CustomerCreatedEvent>
     {
         private readonly ILogger logger;
         private readonly IDataAccessObject dao;

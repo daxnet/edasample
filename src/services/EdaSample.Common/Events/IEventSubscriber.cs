@@ -3,7 +3,7 @@ using System;
 
 namespace EdaSample.Common.Events
 {
-    public interface IEventSubscriber : IMessageSubscriber
+    public interface IEventSubscriber : IMessageSubscriber<IEvent, IEventHandler>
     {
     }
 }

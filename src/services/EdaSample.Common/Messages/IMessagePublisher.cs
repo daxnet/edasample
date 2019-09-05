@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Common.Messages
 {
-    public interface IMessagePublisher : IDisposable
+    public interface IMessagePublisher<in TBaseMessageType> : IDisposable
+        where TBaseMessageType : IMessage
     {
         Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
-            where TMessage : IMessage;
+            where TMessage : TBaseMessageType;
     }
 }

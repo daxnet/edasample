@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EdaSample.Common.Events.Domain
+namespace EdaSample.Common.Events
 {
     public abstract class DomainEvent : IDomainEvent
     {

@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Common.Events
 {
-    public interface IEventPublisher : IMessagePublisher
+    public interface IEventPublisher : IMessagePublisher<IEvent>
     {
-        Task PublishEventAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
-            where TEvent : IEvent;
     }
 }
