@@ -9,8 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\" />
-    <Folder Include="Events\Domain\" />
+    <Compile Remove="Events\Domain\**" />
+    <EmbeddedResource Remove="Events\Domain\**" />
+    <None Remove="Events\Domain\**" />
   </ItemGroup>
 
 </Project>
