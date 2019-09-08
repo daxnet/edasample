@@ -17,14 +17,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using EdaSample.Services.Common;
 
 namespace EdaSample.Services.Notification
 {
     public class Startup
     {
-        private const string RMQ_EXCHANGE = "EdaSample.Exchange";
-        private const string RMQ_QUEUE = "EdaSample.NotificationServiceQueue";
-
         private readonly ILogger logger;
 
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
@@ -50,8 +48,8 @@ namespace EdaSample.Services.Notification
             services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
                 sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),
                 sp.GetRequiredService<IMessageHandlerContext>(),
-                RMQ_EXCHANGE,
-                queueName: RMQ_QUEUE));
+                EdaHelper.RMQ_EVENT_EXCHANGE,
+                queueName: typeof(Startup).Namespace));
 
             var mongoServer = Configuration["mongo:server"];
             var mongoDatabase = Configuration["mongo:database"];

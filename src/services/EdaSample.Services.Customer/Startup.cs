@@ -22,14 +22,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using RabbitMQ.Client;
+using EdaSample.Services.Common;
 
 namespace EdaSample.Services.Customer
 {
     public class Startup
     {
-        private const string RMQ_EXCHANGE = "EdaSample.Exchange";
-        private const string RMQ_QUEUE = "EdaSample.CustomerServiceQueue";
-
         private readonly ILogger logger;
 
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
@@ -70,8 +68,8 @@ namespace EdaSample.Services.Customer
             services.AddSingleton<IEventBus>(sp => new RabbitMQEventBus(connectionFactory,
                 sp.GetRequiredService<ILogger<RabbitMQEventBus>>(),
                 sp.GetRequiredService<IMessageHandlerContext>(),
-                RMQ_EXCHANGE,
-                queueName: RMQ_QUEUE));
+                EdaHelper.RMQ_EVENT_EXCHANGE,
+                queueName: typeof(Startup).Namespace));
 
             this.logger.LogInformation("服务配置完成，已注册到IoC容器！");
         }

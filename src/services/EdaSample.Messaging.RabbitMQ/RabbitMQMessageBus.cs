@@ -101,12 +101,12 @@ namespace EdaSample.Messaging.RabbitMQ
             var consumer = new EventingBasicConsumer(this.channel);
             consumer.Received += async (model, eventArgument) =>
             {
-                var eventBody = eventArgument.Body;
-                var json = Encoding.UTF8.GetString(eventBody);
-                var @event = (IEvent)JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                var messageBody = eventArgument.Body;
+                var json = Encoding.UTF8.GetString(messageBody);
+                var message = (IMessage)JsonConvert.DeserializeObject(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
                 try
                 {
-                    await this.messageHandlerContext.HandleMessageAsync(@event);
+                    await this.messageHandlerContext.HandleMessageAsync(message);
                     if (!autoAck)
                     {
                         channel.BasicAck(eventArgument.DeliveryTag, false);

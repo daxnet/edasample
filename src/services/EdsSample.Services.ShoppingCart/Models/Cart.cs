@@ -34,6 +34,7 @@ namespace EdsSample.Services.ShoppingCart.Models
         {
             this.CartItems = new List<CartItem>();
             this.Id = Guid.NewGuid();
+            this.Status = CartStatus.Normal;
         }
 
         #endregion Public Constructors
@@ -63,6 +64,8 @@ namespace EdsSample.Services.ShoppingCart.Models
         /// The identifier.
         /// </value>
         public Guid Id { get; set; }
+
+        public CartStatus Status { get; set; }
 
         #endregion Public Properties
 
