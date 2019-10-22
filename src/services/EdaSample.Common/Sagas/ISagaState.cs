@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EdaSample.Services.Orders.Sagas
+namespace EdaSample.Common.Sagas
 {
     public interface ISagaState : IAggregateRoot
     {

@@ -9,8 +9,6 @@ namespace EdaSample.Common.Messages
     public interface IMessageHandler
     {
         Task<bool> HandleAsync(IMessage message, CancellationToken cancellationToken = default);
-
-        bool CanHandle(IMessage message);
     }
 
     public interface IMessageHandler<in T> : IMessageHandler

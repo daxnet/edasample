@@ -33,5 +33,7 @@ namespace EdaSample.Common.Messages
         public abstract void Subscribe<TMessage, TMessageHandler>()
             where TMessage : TBaseMessageType
             where TMessageHandler : TBaseMessageHandlerType;
+
+        public abstract void Subscribe(Type messageType, Type messageHandlerType);
     }
 }

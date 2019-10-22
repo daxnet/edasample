@@ -23,6 +23,9 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using RabbitMQ.Client;
 using EdaSample.Services.Common;
+using EdaSample.Common.Commands;
+using EdaSample.Services.Common.Commands;
+using EdaSample.Services.Customer.CommandHandlers;
 
 namespace EdaSample.Services.Customer
 {
@@ -71,6 +74,12 @@ namespace EdaSample.Services.Customer
                 EdaHelper.RMQ_EVENT_EXCHANGE,
                 queueName: typeof(Startup).Namespace));
 
+            services.AddSingleton((Func<IServiceProvider, ICommandBus>)(sp => new RabbitMQCommandBus(connectionFactory,
+                sp.GetRequiredService<ILogger<RabbitMQCommandBus>>(),
+                sp.GetRequiredService<IMessageHandlerContext>(),
+                EdaHelper.RMQ_COMMAND_EXCHANGE,
+                queueName: typeof(Startup).Namespace)));
+
             this.logger.LogInformation("服务配置完成，已注册到IoC容器！");
         }
 
@@ -80,6 +89,10 @@ namespace EdaSample.Services.Customer
             var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
             eventBus.Subscribe<CustomerCreatedEvent, CustomerCreatedEventHandler>();
             eventBus.Subscribe<CustomerCreatedEvent, AddNewCustomerEventHandler>();
+
+            var commandBus = app.ApplicationServices.GetRequiredService<ICommandBus>();
+            commandBus.Subscribe<CreditWithdrawCommand, CreditWithdrawCommandHandler>();
+
 
             if (env.IsDevelopment())
             {

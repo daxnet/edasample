@@ -1,0 +1,1 @@
+curl -X DELETE http://localhost:5030/api/carts/delete-by-customer/c141fcd0-f534-4743-999b-e36dd984a645

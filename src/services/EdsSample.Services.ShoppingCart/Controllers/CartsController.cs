@@ -52,6 +52,9 @@ namespace EdsSample.Services.ShoppingCart.Controllers
             return Ok(cart);
         }
 
+        [HttpGet()]
+        public async Task<IActionResult> GetShoppingCarts() => Ok(await this.dataAccessObject.GetAllAsync<Cart>());
+
         [HttpPost("add-items/{customerId}")]
         public async Task<IActionResult> AddItemsAsync(Guid customerId, [FromBody] IEnumerable<CartItem> cartItems)
         {
@@ -111,6 +114,37 @@ namespace EdsSample.Services.ShoppingCart.Controllers
                 }));
             await this.commandBus.PublishAsync(createOrderCommand);
             return Ok();
+        }
+
+        [HttpPost("revert-state")]
+        public async Task<IActionResult> RevertCartState([FromBody] dynamic request)
+        {
+            var cartId = (Guid)request.CartId;
+
+            // Search for a cart that has the given ID and the status is 'Normal'.
+            var cart = (await this.dataAccessObject.FindBySpecificationAsync<Cart>(c => c.Id == cartId && c.Status != CartStatus.Normal))
+                .FirstOrDefault();
+
+            if (cart == null)
+            {
+                return NotFound("No available shopping cart found.");
+            }
+
+            cart.Status = CartStatus.Normal;
+            await this.dataAccessObject.UpdateByIdAsync<Cart>(cartId, cart);
+            return NoContent();
+        }
+
+        [HttpDelete("delete-by-customer/{customerId}")]
+        public async Task<IActionResult> DeleteCartsByCustomer(Guid customerId)
+        {
+            var carts = await dataAccessObject.FindBySpecificationAsync<Cart>(x => x.CustomerId == customerId);
+            foreach(var cart in carts)
+            {
+                await dataAccessObject.DeleteByIdAsync<Cart>(cart.Id);
+            }
+
+            return NoContent();
         }
 
         #endregion Public Methods

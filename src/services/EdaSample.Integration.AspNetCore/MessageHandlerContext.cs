@@ -59,10 +59,16 @@ namespace EdaSample.Integration.AspNetCore
                 {
                     foreach (var handlerType in handlerTypes)
                     {
-                        var handler = (IMessageHandler)childScope.ServiceProvider.GetService(handlerType);
-                        if (handler.CanHandle(message))
+                        try
                         {
-                            await handler.HandleAsync(message, cancellationToken);
+                            var handler = childScope.ServiceProvider.GetService(handlerType);
+                            var handlerMethod = handler.GetType()
+                                .GetMethod("HandleAsync", new[] { message.GetType(), typeof(CancellationToken) });
+                            await (Task<bool>)handlerMethod?.Invoke(handler, new object[] { message, cancellationToken });
+                        }
+                        catch
+                        {
+                            throw;
                         }
                     }
                 }

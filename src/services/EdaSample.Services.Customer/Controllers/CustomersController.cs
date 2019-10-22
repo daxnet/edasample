@@ -116,6 +116,10 @@ namespace EdaSample.Services.Customer.Controllers
             return Ok(customers.First());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllCustomersAsync()
+            => Ok(await dao.GetAllAsync<Model.Customer>());
+
         #endregion Public Methods
     }
 }

@@ -11,5 +11,7 @@ namespace EdaSample.Common.Messages
         void Subscribe<TMessage, TMessageHandler>()
             where TMessage : TBaseMessageType
             where TMessageHandler : TBaseMessageHandlerType;
+
+        void Subscribe(Type messageType, Type messageHandlerType);
     }
 }

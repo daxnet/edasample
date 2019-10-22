@@ -1,0 +1,16 @@
+[
+  {
+    "pictureFileName": "monitor.png",
+	"price": 256.59,
+	"productId": "de18a312-1041-4ccd-99c4-e8bb3a4161c1",
+	"productName": "Eda Technologies Computer Monitor",
+	"quantity": 2
+  },
+  {
+    "pictureFileName": "joystick.png",
+	"price": 24.45,
+	"productId": "3eabb12f-0892-4a09-9002-962288279027",
+	"productName": "BestPlayer JoyStick Model 750",
+	"quantity": 4
+  }
+]

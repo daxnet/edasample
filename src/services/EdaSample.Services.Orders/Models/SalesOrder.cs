@@ -22,5 +22,8 @@ namespace EdaSample.Services.Orders.Models
         public List<SalesOrderLine> Lines { get; set; }
 
         public OrderStatus Status { get; set; }
+
+        public float TotalAmount
+            => Lines?.Sum(l => l.Quantity * l.Price) ?? 0;
     }
 }

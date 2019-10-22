@@ -1,4 +1,18 @@
-﻿using EdaSample.Common.Events;
+﻿// ============================================================================
+//   ______    _        _____                       _
+//  |  ____|  | |      / ____|                     | |
+//  | |__   __| | __ _| (___   __ _ _ __ ___  _ __ | | ___
+//  |  __| / _` |/ _` |\___ \ / _` | '_ ` _ \| '_ \| |/ _ \
+//  | |___| (_| | (_| |____) | (_| | | | | | | |_) | |  __/
+//  |______\__,_|\__,_|_____/ \__,_|_| |_| |_| .__/|_|\___|
+//                                           | |
+//                                           |_|
+// MIT License
+//
+// Copyright (c) 2017-2019 Sunny Chen (daxnet)
+//
+// ============================================================================
+
 using EdaSample.Common.Messages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -11,20 +25,42 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Messaging.RabbitMQ
 {
+    /// <summary>
+    /// Represents the base class for the message buses that utilize the RabbitMQ as the back-end messaging mechanism.
+    /// </summary>
+    /// <typeparam name="TBaseMessageType">The type of the base message type.</typeparam>
+    /// <typeparam name="TBaseMessageHandlerType">The type of the base message handler type.</typeparam>
+    /// <seealso cref="EdaSample.Common.Messages.MessageBus{TBaseMessageType, TBaseMessageHandlerType}" />
     public abstract class RabbitMQMessageBus<TBaseMessageType, TBaseMessageHandlerType> : MessageBus<TBaseMessageType, TBaseMessageHandlerType>
         where TBaseMessageType : IMessage
         where TBaseMessageHandlerType : IMessageHandler
     {
-        private readonly IConnectionFactory connectionFactory;
-        private readonly IConnection connection;
+        #region Private Fields
+
+        private readonly bool autoAck;
         private readonly IModel channel;
+        private readonly IConnection connection;
+        private readonly IConnectionFactory connectionFactory;
         private readonly string exchangeName;
         private readonly string exchangeType;
-        private readonly string queueName;
-        private readonly bool autoAck;
         private readonly ILogger logger;
+        private readonly string queueName;
         private bool disposed;
 
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RabbitMQMessageBus{TBaseMessageType, TBaseMessageHandlerType}"/> class.
+        /// </summary>
+        /// <param name="connectionFactory">The connection factory.</param>
+        /// <param name="logger">The logger.</param>
+        /// <param name="context">The context.</param>
+        /// <param name="exchangeName">Name of the exchange.</param>
+        /// <param name="exchangeType">Type of the exchange.</param>
+        /// <param name="queueName">Name of the queue.</param>
+        /// <param name="autoAck">if set to <c>true</c> [automatic ack].</param>
         public RabbitMQMessageBus(IConnectionFactory connectionFactory,
             ILogger<RabbitMQMessageBus<TBaseMessageType, TBaseMessageHandlerType>> logger,
             IMessageHandlerContext context,
@@ -49,6 +85,10 @@ namespace EdaSample.Messaging.RabbitMQ
             logger.LogInformation($"RabbitMQEventBus构造函数调用完成。Hash Code：{this.GetHashCode()}.");
         }
 
+        #endregion Public Constructors
+
+        #region Public Methods
+
         public override Task PublishAsync<TMessage>(TMessage message, CancellationToken cancellationToken = default)
         {
             var json = JsonConvert.SerializeObject(message, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
@@ -69,6 +109,19 @@ namespace EdaSample.Messaging.RabbitMQ
             }
         }
 
+        public override void Subscribe(Type messageType, Type messageHandlerType)
+        {
+            if (!this.messageHandlerContext.HandlerRegistered(messageType, messageHandlerType))
+            {
+                this.messageHandlerContext.RegisterHandler(messageType, messageHandlerType);
+                this.channel.QueueBind(this.queueName, this.exchangeName, messageType.FullName);
+            }
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
         protected override void Dispose(bool disposing)
         {
             if (!disposed)
@@ -85,6 +138,10 @@ namespace EdaSample.Messaging.RabbitMQ
                 base.Dispose(disposing);
             }
         }
+
+        #endregion Protected Methods
+
+        #region Private Methods
 
         private string InitializeEventConsumer(string queue)
         {
@@ -122,5 +179,7 @@ namespace EdaSample.Messaging.RabbitMQ
 
             return localQueueName;
         }
+
+        #endregion Private Methods
     }
 }

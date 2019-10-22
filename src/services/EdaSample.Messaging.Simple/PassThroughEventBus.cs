@@ -16,6 +16,7 @@
 using EdaSample.Common.Events;
 using EdaSample.Common.Messages;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -68,6 +69,14 @@ namespace EdaSample.Messaging.Simple
             if (!this.messageHandlerContext.HandlerRegistered<TMessage, TMessageHandler>())
             {
                 this.messageHandlerContext.RegisterHandler<TMessage, TMessageHandler>();
+            }
+        }
+
+        public void Subscribe(Type messageType, Type messageHandlerType)
+        {
+            if (!this.messageHandlerContext.HandlerRegistered(messageType, messageHandlerType))
+            {
+                this.messageHandlerContext.RegisterHandler(messageType, messageHandlerType);
             }
         }
 

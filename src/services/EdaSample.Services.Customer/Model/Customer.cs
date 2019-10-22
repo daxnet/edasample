@@ -26,7 +26,7 @@ namespace EdaSample.Services.Customer.Model
             Id = id;
             Name = name;
             Email = email;
-            Credit = 5000; // By default, set Credit to 100.
+            Credit = 5000; // By default, set Credit to 5000.
         }
 
         public Guid Id { get; set; }
@@ -35,6 +35,6 @@ namespace EdaSample.Services.Customer.Model
 
         public string Name { get; set; }
 
-        public int Credit { get; set; }
+        public float Credit { get; set; }
     }
 }

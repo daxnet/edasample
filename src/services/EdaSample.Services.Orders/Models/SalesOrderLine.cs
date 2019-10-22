@@ -14,14 +14,6 @@ namespace EdaSample.Services.Orders.Models
         public Guid Id { get; }
 
         /// <summary>
-        /// Gets or sets the name of the picture file.
-        /// </summary>
-        /// <value>
-        /// The name of the picture file.
-        /// </value>
-        public string PictureFileName { get; set; }
-
-        /// <summary>
         /// Gets or sets the price.
         /// </summary>
         /// <value>
@@ -37,13 +29,6 @@ namespace EdaSample.Services.Orders.Models
         /// </value>
         public Guid ProductId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the name of the product.
-        /// </summary>
-        /// <value>
-        /// The name of the product.
-        /// </value>
-        public string ProductName { get; set; }
         /// <summary>
         /// Gets or sets the quantity.
         /// </summary>
