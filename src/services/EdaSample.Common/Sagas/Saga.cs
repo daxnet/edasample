@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 namespace EdaSample.Common.Sagas
 {
     public abstract class Saga<TState, TEvent> : ISaga<TState, TEvent>
-        where TState : ISagaState, new()
+        where TState : class, ISagaState, new()
         where TEvent : IEvent
     {
+
         #region Protected Fields
 
         protected readonly ICommandBus commandBus;
         protected readonly IEventBus eventBus;
-        private Guid stateId;
 
         #endregion Protected Fields
 
@@ -39,17 +39,17 @@ namespace EdaSample.Common.Sagas
 
         #endregion Protected Constructors
 
-        #region Protected Properties
+        #region Public Properties
 
-        #endregion Protected Properties
+        public Guid Id { get; } = Guid.NewGuid();
+
+        #endregion Public Properties
 
         #region Public Methods
 
         public async Task<bool> HandleAsync(TEvent message, CancellationToken cancellationToken = default)
         {
-            var state = new TState();
-            await this.SaveStateAsync(state);
-            stateId = state.Id;
+            await this.SaveStateAsync();
             return await this.StartAsync(message, cancellationToken);
         }
 
@@ -67,23 +67,43 @@ namespace EdaSample.Common.Sagas
 
         #region Protected Methods
 
-        protected async Task<TState> LoadStateAsync() => await sagaStore.GetByIdAsync<TState>(stateId);
-
-        protected async Task SaveStateAsync(TState state)
+        protected async Task<TState> LoadStateAsync()
         {
-            var persistedState = await sagaStore.GetByIdAsync<TState>(state.Id);
-            if (persistedState != null)
+            var sagaStorageEntity = (await sagaStore.FindBySpecificationAsync<SagaStorageEntity>(e => e.SagaId == Id)).FirstOrDefault();
+            if (sagaStorageEntity == null)
             {
-                await sagaStore.UpdateByIdAsync<TState>(state.Id, state);
+                throw new InvalidOperationException();
+            }
+
+            var state = new TState();
+            state.Deserialize(sagaStorageEntity.State);
+            return state;
+        }
+
+        protected async Task SaveStateAsync(TState state = null)
+        {
+            var persistedSaga = (await sagaStore.FindBySpecificationAsync<SagaStorageEntity>(e => e.SagaId == Id)).FirstOrDefault();
+            if (persistedSaga != null)
+            {
+                persistedSaga.State = state.Serialize();
+                await sagaStore.UpdateByIdAsync(persistedSaga.Id, persistedSaga);
             }
             else
             {
-                await sagaStore.AddAsync(state);
+                var sagaStorageEntity = new SagaStorageEntity(Id);
+                sagaStorageEntity.StateClrType = typeof(TState).AssemblyQualifiedName;
+                if (state != null)
+                {
+                    sagaStorageEntity.State = state.Serialize();
+                }
+
+                await sagaStore.AddAsync(sagaStorageEntity);
             }
         }
 
         protected abstract Task<bool> StartAsync(TEvent message, CancellationToken cancellationToken = default);
 
         #endregion Protected Methods
+
     }
 }

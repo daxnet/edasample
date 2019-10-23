@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace EdaSample.Common.Sagas
 {
-    public interface ISagaState : IAggregateRoot
+    public interface ISagaState
     {
+        string Serialize();
+
+        void Deserialize(string serializedData);
     }
 }

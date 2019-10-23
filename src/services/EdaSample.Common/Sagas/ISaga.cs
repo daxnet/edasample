@@ -5,11 +5,7 @@ using System.Text;
 
 namespace EdaSample.Common.Sagas
 {
-    public interface ISaga
-    {
-    }
-
-    public interface ISaga<TState, TEvent> : IStartWith<TEvent>
+    public interface ISaga<TState, TEvent> : IStartWith<TEvent>, IAggregateRoot
         where TState : ISagaState
         where TEvent : IEvent
     { }
