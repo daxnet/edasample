@@ -35,7 +35,6 @@ namespace EdaSample.Services.Customer.Controllers
         private readonly IDataAccessObject dao;
         private readonly IEventBus eventBus;
         private readonly ILogger logger;
-
         #endregion Private Fields
 
         #region Public Constructors

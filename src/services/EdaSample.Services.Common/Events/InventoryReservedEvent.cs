@@ -6,14 +6,10 @@ using System.Text;
 
 namespace EdaSample.Services.Common.Events
 {
-    public class CreditWithdrewEvent : SagaReplyEvent
+    public class InventoryReservedEvent : SagaReplyEvent
     {
-        public CreditWithdrewEvent(Guid sagaId, Guid customerId)
+        public InventoryReservedEvent(Guid sagaId)
             : base(sagaId)
-        {
-            CustomerId = customerId;
-        }
-
-        public Guid CustomerId { get; }
+        { }
     }
 }

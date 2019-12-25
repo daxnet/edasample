@@ -8,34 +8,73 @@ using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
 using EdaSample.Common.Messages;
 using EdaSample.Common.Sagas;
+using EdaSample.Common.Sagas.States;
+using EdaSample.Common.Sagas.States.Builder;
 using EdaSample.Services.Common.Commands;
 using EdaSample.Services.Common.Events;
 
 namespace EdaSample.Services.Orders.Sagas
 {
-    public class CreateOrderSaga : Saga<CreateOrderSagaState, OrderCreatedEvent>, ICanHandle<CreditWithdrewEvent>
+    public class CreateOrderSaga : Saga<CreateOrderSagaData>
     {
-        public CreateOrderSaga(ICommandBus commandBus, IEventBus eventBus, IDataAccessObject sagaStore) 
-            : base(commandBus, eventBus, sagaStore)
+        #region Public Constructors
+
+        public CreateOrderSaga(ICommandPublisher commandPublisher)
+            : base(commandPublisher)
+        { }
+        #endregion Public Constructors
+
+        #region Protected Methods
+
+        protected override SagaStateMachine<CreateOrderSagaData> BuildStateMachine()
         {
-            
+            //return new SagaStateMachineBuilder<CreateOrderSagaData>()
+            //    .StartWith(OnStart)
+            //    .TransitWhen<CreditWithdrewEvent>("creditWithdrew", OnCreditWithdrew)
+            //    .ThenTransitWhen<InventoryReservedEvent>("inventoryReserved", OnInventoryReserved)
+            //    .Build();
+
+            return new SagaStateMachineBuilder<CreateOrderSagaData>()
+                .CreateStateMachine()
+                .InitializeWith(OnStart)
+                .When(typeof(CreditWithdrewEvent))
+                .TransitTo("creditWithdrew", OnCreditWithdrew)
+                .Build();
         }
 
-        protected override async Task<bool> StartAsync(OrderCreatedEvent message, CancellationToken cancellationToken = default)
-        {
-            var state = await this.LoadStateAsync();
-            state.OrderId = message.SalesOrderId;
-            state.CustomerId = message.CustomerId;
-            await SaveStateAsync(state);
+        #endregion Protected Methods
 
-            await commandBus.PublishAsync(new CreditWithdrawCommand(message.CustomerId, message.TotalAmount));
+        #region Private Methods
+
+        private async Task<bool> OnCreditWithdrew(SagaReplyEvent replyMessage, CreateOrderSagaData sagaData, CancellationToken cancellationToken = default)
+        {
+            var evnt = replyMessage.As<CreditWithdrewEvent>();
+            if (evnt == null)
+            {
+                return false;
+            }
+
+            sagaData.CreditWithdrewSuccessful = true;
+
+            await SendAsync(new InventoryReservationCommand(SagaId));
 
             return true;
         }
 
-        public Task<bool> HandleAsync(CreditWithdrewEvent @event, CancellationToken cancellationToken = default)
+        private Task<bool> OnInventoryReserved(SagaReplyEvent replyMessage, CreateOrderSagaData sagaData, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(true);
         }
+
+        private async Task<bool> OnStart(CreateOrderSagaData initialData, CancellationToken cancellationToken = default)
+        {
+            await SendAsync(new CreditWithdrawCommand(SagaId, 
+                initialData.SalesOrderDetails.CustomerId, 
+                initialData.SalesOrderDetails.TotalAmount), cancellationToken);
+
+            return true;
+        }
+
+        #endregion Private Methods
     }
 }

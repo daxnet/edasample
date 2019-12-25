@@ -1,21 +1,17 @@
 ﻿using EdaSample.Common.Events;
+using EdaSample.Common.Sagas;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace EdaSample.Services.Common.Events
 {
-    public class OrderCreatedEvent : IEvent
+    public class OrderCreatedEvent : SagaReplyEvent
     {
-        public OrderCreatedEvent()
+        public OrderCreatedEvent(Guid sagaId)
+            : base(sagaId)
         {
-            Id = Guid.NewGuid();
-            Timestamp = DateTime.UtcNow;
         }
-
-        public Guid Id { get; }
-
-        public DateTime Timestamp { get; }
 
         public Guid SalesOrderId { get; set; }
 

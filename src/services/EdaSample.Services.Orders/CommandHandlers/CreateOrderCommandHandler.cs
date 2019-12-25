@@ -1,6 +1,7 @@
 ﻿using EdaSample.Common.Commands;
 using EdaSample.Common.DataAccess;
 using EdaSample.Common.Events;
+using EdaSample.Common.Sagas;
 using EdaSample.Services.Common.Commands;
 using EdaSample.Services.Common.Events;
 using EdaSample.Services.Orders.Models;
@@ -16,14 +17,12 @@ namespace EdaSample.Services.Orders.CommandHandlers
     public class CreateOrderCommandHandler : BaseCommandHandler<CreateOrderCommand>
     {
         private readonly IDataAccessObject dao;
-        // private ICommandBus commandBus;
-        private IEventBus eventBus;
+        private readonly ISagaManager<CreateOrderSagaData> createOrderSagaManager;
 
-        public CreateOrderCommandHandler(IDataAccessObject dao, /*ICommandBus commandBus, */IEventBus eventBus)
+        public CreateOrderCommandHandler(IDataAccessObject dao, ISagaManager<CreateOrderSagaData> createOrderSagaManager)
         {
             this.dao = dao;
-            // this.commandBus = commandBus;
-            this.eventBus = eventBus;
+            this.createOrderSagaManager = createOrderSagaManager;
         }
 
         public override async Task<bool> HandleAsync(CreateOrderCommand message, CancellationToken cancellationToken = default)
@@ -48,13 +47,13 @@ namespace EdaSample.Services.Orders.CommandHandlers
             }
 
             // Inserts the sales order to the backend database.
-            await this.dao.AddAsync(salesOrder);
-            await this.eventBus.PublishAsync(new OrderCreatedEvent
+            await dao.AddAsync(salesOrder);
+            var createOrderSagaData = new CreateOrderSagaData
             {
-                SalesOrderId = salesOrder.Id,
-                CustomerId = message.CustomerId,
-                TotalAmount = salesOrder.TotalAmount
-            }, cancellationToken);
+                SalesOrderDetails = new OrderDetails(salesOrder)
+            };
+
+            await createOrderSagaManager.InitiateAsync(createOrderSagaData);
 
             return true;
         }

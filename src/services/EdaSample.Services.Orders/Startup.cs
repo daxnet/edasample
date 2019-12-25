@@ -64,8 +64,10 @@ namespace EdaSample.Services.Orders
                 EdaHelper.RMQ_EVENT_EXCHANGE,
                 queueName: typeof(Startup).Namespace)));
 
-            // Configure Saga manager
-            services.AddSingleton<ISagaManager>(sp => new SagaManager(sp.GetRequiredService<IEventBus>()));
+            services.AddSingleton<IEventSubscriber>(sp => sp.GetRequiredService<IEventBus>());
+            services.AddSingleton<ICommandPublisher>(sp => sp.GetRequiredService<ICommandBus>());
+            services.AddTransient<ISaga<CreateOrderSagaData>, CreateOrderSaga>();
+            services.AddTransient<ISagaManager<CreateOrderSagaData>, SagaManager<CreateOrderSagaData>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,9 +76,7 @@ namespace EdaSample.Services.Orders
             var commandBus = app.ApplicationServices.GetRequiredService<ICommandBus>();
             commandBus.Subscribe<CreateOrderCommand, CreateOrderCommandHandler>();
 
-            var sagaManager = app.ApplicationServices.GetRequiredService<ISagaManager>();
-            sagaManager.Register<CreateOrderSagaState, OrderCreatedEvent, CreateOrderSaga>();
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

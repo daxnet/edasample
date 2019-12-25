@@ -41,9 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Messaging.Simple"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Messaging.RabbitMQ", "EdaSample.Messaging.RabbitMQ\EdaSample.Messaging.RabbitMQ.csproj", "{524FF319-6E1F-472E-AFDE-28684BCD8B10}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Services.SagaManager", "EdaSample.Services.SagaManager\EdaSample.Services.SagaManager.csproj", "{BEC4427C-C36A-45D4-8222-A98807750200}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdaSample.Services.Orders", "EdaSample.Services.Orders\EdaSample.Services.Orders.csproj", "{BE2FBB40-BDC2-4CD7-9E0E-8D16BC687C26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdaSample.Services.Orders", "EdaSample.Services.Orders\EdaSample.Services.Orders.csproj", "{BE2FBB40-BDC2-4CD7-9E0E-8D16BC687C26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,10 +109,6 @@ Global
 		{524FF319-6E1F-472E-AFDE-28684BCD8B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{524FF319-6E1F-472E-AFDE-28684BCD8B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{524FF319-6E1F-472E-AFDE-28684BCD8B10}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BEC4427C-C36A-45D4-8222-A98807750200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BEC4427C-C36A-45D4-8222-A98807750200}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BEC4427C-C36A-45D4-8222-A98807750200}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BEC4427C-C36A-45D4-8222-A98807750200}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BE2FBB40-BDC2-4CD7-9E0E-8D16BC687C26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BE2FBB40-BDC2-4CD7-9E0E-8D16BC687C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE2FBB40-BDC2-4CD7-9E0E-8D16BC687C26}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -139,7 +133,6 @@ Global
 		{D1F1A504-F313-4FD6-B72D-C8F19CD4E2C5} = {93BE142E-830C-4FBF-9267-8FD7472F088F}
 		{F85F764E-05A5-48C4-9AEE-E87704E7035C} = {865391C4-CCCF-4B27-A784-C02794202855}
 		{524FF319-6E1F-472E-AFDE-28684BCD8B10} = {865391C4-CCCF-4B27-A784-C02794202855}
-		{BEC4427C-C36A-45D4-8222-A98807750200} = {93BE142E-830C-4FBF-9267-8FD7472F088F}
 		{BE2FBB40-BDC2-4CD7-9E0E-8D16BC687C26} = {93BE142E-830C-4FBF-9267-8FD7472F088F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
